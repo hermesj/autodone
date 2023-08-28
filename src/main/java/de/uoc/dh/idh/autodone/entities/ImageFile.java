@@ -32,11 +32,11 @@ public class ImageFile {
 
     @ManyToOne
     @JoinColumn(name = "mastodon_user_id")
-    private MastodonUser mastodonUser;
+    private MastodonUser mastodonuser;
 
     @ManyToOne
     @JoinColumn(name = "mastodon_post_id")
-    private MastodonPost mastodonPost;
+    private MastodonPost mastodonpost;
 
     
     public ImageFile(String fileName, String fileType, long fileSize, byte[] data) {

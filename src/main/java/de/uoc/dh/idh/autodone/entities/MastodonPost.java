@@ -30,7 +30,7 @@ public class MastodonPost implements Comparable<MastodonPost>{
 
     @ManyToOne
     @JoinColumn(name = "postgroup_id", nullable = false)
-    protected PostGroup group;
+    protected PostGroup postgroup;
 
     @ManyToOne
     @JoinColumn(name = "mastodonuser_id", nullable = false)
@@ -80,7 +80,7 @@ public class MastodonPost implements Comparable<MastodonPost>{
         this.content = content;
         this.pageID = facebookpageID;
         this.date = date;
-        this.group = group;
+        this.postgroup = group;
         this.mastodonuser = group.getMastodonUser();
     }
 
@@ -116,7 +116,7 @@ public class MastodonPost implements Comparable<MastodonPost>{
     public String toString() {
         return "Post{" +
                 "id=" + id +
-                ", facebookpage=" + group.getFbId() +
+                ", facebookpage=" + postgroup.getFbId() +
                 ", fbuser=" + mastodonuser.getMstdId() +
                 ", facebookpageID='" + pageID + '\'' +
                 ", content='" + content + '\'' +
@@ -152,12 +152,12 @@ public class MastodonPost implements Comparable<MastodonPost>{
 
 
 	public PostGroup getGroup() {
-		return group;
+		return postgroup;
 	}
 
 
 	public void setGroup(PostGroup group) {
-		this.group = group;
+		this.postgroup = group;
 	}
 
 

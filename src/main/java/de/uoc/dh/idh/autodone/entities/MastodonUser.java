@@ -2,13 +2,12 @@ package de.uoc.dh.idh.autodone.entities;
 
 import java.util.List;
 
-import org.springframework.data.annotation.Id;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

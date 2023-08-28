@@ -33,10 +33,10 @@ public class PostGroup {
 
     @ManyToOne
     @JoinColumn(name="mastodonuser_id", nullable = false)
-    private MastodonUser mastodonUser;
+    private MastodonUser mastodonuser;
 
     @OneToMany(mappedBy="postgroup", cascade = CascadeType.ALL)
-    private List<MastodonPost> mastodonPosts = new ArrayList<MastodonPost>();
+    private List<MastodonPost> mastodonposts = new ArrayList<MastodonPost>();
 
     @Column(columnDefinition="boolean default true")
     private boolean enabled = true;
@@ -81,19 +81,19 @@ public class PostGroup {
 	}
 
 	public MastodonUser getMastodonUser() {
-		return mastodonUser;
+		return mastodonuser;
 	}
 
 	public void setMastodonUser(MastodonUser mastodonUser) {
-		this.mastodonUser = mastodonUser;
+		this.mastodonuser = mastodonUser;
 	}
 
 	public List<MastodonPost> getMastodonPosts() {
-		return mastodonPosts;
+		return mastodonposts;
 	}
 
 	public void setMastodonPosts(List<MastodonPost> mastodonPosts) {
-		this.mastodonPosts = mastodonPosts;
+		this.mastodonposts = mastodonPosts;
 	}
 
 	public boolean isEnabled() {

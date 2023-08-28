@@ -99,8 +99,8 @@ public class TsvService {
      * Tsv Error handling is done here.
      */
     private MastodonPost arrayToPost(String[] posts, int row, boolean imgcheck, boolean datecheck) throws MalformedTsvException {
-
-    	MastodonPost post = new MastodonPost();
+//TODO Fill Constructor!
+    	MastodonPost post = new MastodonPost(null, null, null, null);
         for (int col = 0; col < posts.length; col++) {
             String value = posts[col];
             String originalDate = "";
