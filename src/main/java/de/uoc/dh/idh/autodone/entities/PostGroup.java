@@ -29,7 +29,7 @@ public class PostGroup {
     private String name;
 
     @Column(nullable = false)
-    private String fbId;
+    private String mstdId;
 
     @ManyToOne
     @JoinColumn(name="mastodonuser_id", nullable = false)
@@ -48,7 +48,7 @@ public class PostGroup {
 
         PostGroup page = (PostGroup) o;
 
-        return fbId.equals(page.fbId);
+        return mstdId.equals(page.mstdId);
     }
 
     @Override
@@ -73,11 +73,11 @@ public class PostGroup {
 	}
 
 	public String getFbId() {
-		return fbId;
+		return mstdId;
 	}
 
 	public void setFbId(String fbId) {
-		this.fbId = fbId;
+		this.mstdId = fbId;
 	}
 
 	public MastodonUser getMastodonUser() {

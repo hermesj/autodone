@@ -10,13 +10,13 @@ import de.uoc.dh.idh.autodone.entities.PostGroup;
 
 public interface PostGroupRepository extends CrudRepository<PostGroup, Integer> {
 
-    List<PostGroup> findByFacebookuserId(int userID);
-    List<PostGroup> findAllByFbId(String fbId);
+    List<PostGroup> findByMastodonuserId(int userID);
+    List<PostGroup> findAllByMstdId(String mstdId);
 
-    PostGroup findByFbId(String fbId);
-    PostGroup findByFbIdAndFacebookuser_Id(String fbId, int id);
+    PostGroup findByMstdId(String mstdId);
+    PostGroup findByMstdIdAndMastodonuserId(String mstdId, int id);
 
-    void deleteByFbId(String fbId);
+    void deleteByMstdId(String mstdId);
 
 
 }

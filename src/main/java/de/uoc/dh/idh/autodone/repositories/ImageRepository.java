@@ -9,5 +9,5 @@ import de.uoc.dh.idh.autodone.entities.ImageFile;
 public interface ImageRepository extends JpaRepository<ImageFile, String> {
 
 
-    List<ImageFile> findAllByFacebookpost_Id(int id);
+    List<ImageFile> findAllByMastodonpostId(int id);
 }

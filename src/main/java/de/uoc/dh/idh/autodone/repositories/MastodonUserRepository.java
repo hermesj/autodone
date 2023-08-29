@@ -6,9 +6,9 @@ import de.uoc.dh.idh.autodone.entities.MastodonUser;
 
 public interface MastodonUserRepository extends CrudRepository<MastodonUser, Integer> {
 
-    int findIdByMstdnId(String mstdnId);
+    int findIdByMstdId(String mstdnId);
     MastodonUser findMastodonUserById(int Id);
-    MastodonUser findMastodonUserByMstdnId(String id);
+    MastodonUser findMastodonUserByMstdId(String id);
 
 
 }

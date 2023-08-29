@@ -50,7 +50,7 @@ public class PostTask extends TimerTask {
 
         if (post != null && user != null && !post.isPosted() && post.isScheduled() && post.isEnabled()) {
             String id = mastodonService.post(user, post);
-            MastodonPost posted = mastodonPostRepository.findByIdAndMastodonuser(post.getId(), user.getId());
+            MastodonPost posted = mastodonPostRepository.findByIdAndMastodonuserId(post.getId(), user.getId());
             if(id != null && !id.isEmpty()){
                 posted.setPosted(true);
                 posted.setEnabled(false);
