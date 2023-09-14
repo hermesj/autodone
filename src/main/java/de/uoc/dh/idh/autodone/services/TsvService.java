@@ -112,6 +112,9 @@ public class TsvService {
                         String date = DateParser.parse(value,datecheck);
                         post.setDate(date);
                         if (date == null) {
+                        	System.out.println(row);
+                        	System.out.println(value);
+
                             throw new MalformedTsvException("Date Error", row, value);
                         }
                     } catch (Exception e) {
@@ -122,19 +125,23 @@ public class TsvService {
                     //Time
                     try {
                         if(value.split(":").length == 3){
+                        	System.out.println("Here");
                             String[] timeArray = value.split(":");
                             value = timeArray[0] + ":" + timeArray[1];
                         }
                         post.setTime(value);
+                        
                         int delay = scheduleService.getDelay(post);
+                       
                         if (delay < 0 && datecheck) {
+                        	
                             throw new MalformedTsvException("Time Error", row, originalDate + " " + value);
                         } else if (delay < 0) {
                             post.setError(true);
                         }
 
                     } catch (Exception e) {
-                        throw new MalformedTsvException("Time Error", row, originalDate + " " + value);
+                        throw e;//new MalformedTsvException("Time Error", row, originalDate + " " + value);
                     }
                     break;
                 case 2:

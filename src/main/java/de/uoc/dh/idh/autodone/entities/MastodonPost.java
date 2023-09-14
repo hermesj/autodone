@@ -81,7 +81,7 @@ public class MastodonPost implements Comparable<MastodonPost>{
         this.pageID = facebookpageID;
         this.date = date;
         this.postgroup = group;
-        this.mastodonuser = group.getMastodonUser();
+        //this.mastodonuser = group.getMastodonUser();
     }
 
 

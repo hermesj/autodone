@@ -22,11 +22,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import de.uoc.dh.idh.autodone.entities.MastodonPost;
 import de.uoc.dh.idh.autodone.repositories.MastodonPostRepository;
+import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 
 @Log4j2
-//@NoArgsConstructor
+@NoArgsConstructor
 @Service
 @Transactional
 public class ScheduleService {
