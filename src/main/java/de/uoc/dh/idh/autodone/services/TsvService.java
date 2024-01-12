@@ -10,11 +10,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.univocity.parsers.tsv.TsvParser;
 import com.univocity.parsers.tsv.TsvParserSettings;
 
 import de.uoc.dh.idh.autodone.entities.MastodonPost;
 import de.uoc.dh.idh.autodone.entities.PostGroup;
+import de.uoc.dh.idh.autodone.helpers.SimpleTweet;
+import de.uoc.dh.idh.autodone.helpers.TSVParser;
 import de.uoc.dh.idh.autodone.repositories.PostGroupRepository;
 import lombok.extern.log4j.Log4j2;
 
@@ -50,24 +51,19 @@ public class TsvService {
 
         TsvParserSettings settings = new TsvParserSettings();
 
-        settings.getFormat().setLineSeparator("\n");
-        settings.setMaxCharsPerColumn(2000000);
+        //settings.getFormat().setLineSeparator("\n");
+        //settings.setMaxCharsPerColumn(2000000);
 
-        TsvParser parser = new TsvParser(settings);
+        TSVParser parser = new TSVParser();
 
-        List<String[]> allRows = parser.parseAll(tsvFile);
+        List<SimpleTweet> allTweets = parser.readTSV(tsvFile);
 
         List<MastodonPost> parsedPosts = new ArrayList<MastodonPost>();
 
         int i = 1;
-        for (String[] row : allRows) {
-            //Ignore lines with '//'
-            if (row[0].startsWith("//")) {
-                //log.info("Comment in line " + i);
-                continue;
-            }
-
-            MastodonPost post = arrayToPost(row, i, imgcheck, datecheck);
+        for (SimpleTweet tweet : allTweets) {
+           
+            MastodonPost post = simpleTweetToPost(tweet);
             if (post != null) {
                 try {
                     if (post.getContent().equals("") && post.getImg().equals("")) {
@@ -86,7 +82,7 @@ public class TsvService {
                 }
                 parsedPosts.add(post);
                 i++;
-            } else throw new MalformedTsvException("Unspecific Formatting Error", i, Arrays.asList(row).toString());
+            } else throw new MalformedTsvException("Unspecific Formatting Error", i, Arrays.asList(tweet).toString());
         }
 
 
@@ -98,74 +94,23 @@ public class TsvService {
      * Iterates over each value in a row and creates a @{@link Facebookpost}
      * Tsv Error handling is done here.
      */
-    private MastodonPost arrayToPost(String[] posts, int row, boolean imgcheck, boolean datecheck) throws MalformedTsvException {
-//TODO Fill Constructor!
+    private MastodonPost simpleTweetToPost(SimpleTweet tweet) throws MalformedTsvException {
+
     	MastodonPost post = new MastodonPost(null, null, null, null);
-        for (int col = 0; col < posts.length; col++) {
-            String value = posts[col];
-            String originalDate = "";
-            switch (col) {
-                case 0:
-                    //Date
-                    try {
-                        originalDate = value;
-                        String date = DateParser.parse(value,datecheck);
-                        post.setDate(date);
-                        if (date == null) {
-                        	System.out.println(row);
-                        	System.out.println(value);
-
-                            throw new MalformedTsvException("Date Error", row, value);
-                        }
-                    } catch (Exception e) {
-                        throw new MalformedTsvException("Date Error", row, value);
-                    }
-                    break;
-                case 1:
-                    //Time
-                    try {
-                        if(value.split(":").length == 3){
-                        	System.out.println("Here");
-                            String[] timeArray = value.split(":");
-                            value = timeArray[0] + ":" + timeArray[1];
-                        }
-                        post.setTime(value);
-                        
-                        int delay = scheduleService.getDelay(post);
-                       
-                        if (delay < 0 && datecheck) {
-                        	
-                            throw new MalformedTsvException("Time Error", row, originalDate + " " + value);
-                        } else if (delay < 0) {
-                            post.setError(true);
-                        }
-
-                    } catch (Exception e) {
-                        throw e;//new MalformedTsvException("Time Error", row, originalDate + " " + value);
-                    }
-                    break;
-                case 2:
-                    //Content
-                    post.setContent(value != null ? value : "");
-                    break;
-                case 3:
-                    //Image
-                    if (imgcheck) {
-                        if (!isImage(value)) throw new MalformedTsvException("Image Error", row, value);
-                    }
-                    if(value==null){
-                        post.setImg("");
-                    }else{
-                        post.setImg(value);
-                    }
-
-                    break;
-                default:
-                    break;
-
-            }
-        }
-
+    	post.setDate(tweet.getDate().toString());
+    	post.setTime(tweet.getTime().toString());
+    	post.setContent(tweet.getText());
+    	String imgvalue = tweet.getUrl().toString();
+    	
+    	// TODO no break here!
+    	//if (!isImage(imgvalue)) throw new MalformedTsvException("Image Error", 0, imgvalue);
+    	
+    	if(imgvalue==null){
+    		post.setImg("");
+    	}
+    	else{
+    		post.setImg(imgvalue);
+    	}
         return post;
     }
 
