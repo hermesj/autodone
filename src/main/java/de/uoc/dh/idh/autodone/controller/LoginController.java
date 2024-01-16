@@ -1,7 +1,7 @@
 package de.uoc.dh.idh.autodone.controller;
 
 import static de.uoc.dh.idh.autodone.config.SecurityConfig.OAUTH_AUTHORIZE;
-import static de.uoc.dh.idh.autodone.config.SecurityConfig.OAUTH_LOGIN;
+import static org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter.DEFAULT_LOGIN_PAGE_URL;
 import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import de.uoc.dh.idh.autodone.services.MastodonInstanceService;
 
 @Controller()
-@RequestMapping(OAUTH_LOGIN)
+@RequestMapping(DEFAULT_LOGIN_PAGE_URL)
 public class LoginController {
 
 	@Autowired()

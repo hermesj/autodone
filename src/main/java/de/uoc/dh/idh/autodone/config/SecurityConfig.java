@@ -1,5 +1,7 @@
 package de.uoc.dh.idh.autodone.config;
 
+import static de.uoc.dh.idh.autodone.AutodoneApplication.getEnvironment;
+import static org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter.DEFAULT_LOGIN_PAGE_URL;
 import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +18,11 @@ import de.uoc.dh.idh.autodone.repositories.MastodonRegistrationRepository;
 @Configuration()
 public class SecurityConfig {
 
-	public static final String OAUTH_LOGIN = "/login";
+	public static final String OAUTH_AUTHORIZE = DEFAULT_LOGIN_PAGE_URL + "/auth/{domain}";
 
-	public static final String OAUTH_AUTHORIZE = OAUTH_LOGIN + "/auth/{registrationId}";
+	public static final String OAUTH_REDIRECT = DEFAULT_LOGIN_PAGE_URL + "/code/{domain}";
 
-	public static final String OAUTH_REDIRECT = OAUTH_LOGIN + "/code/{registrationId}";
+	public static final String SCHEME = getEnvironment().matchesProfiles("test") ? "http" : "https";
 
 	@Autowired()
 	private MastodonRegistrationRepository registrationRepository;
@@ -31,17 +33,17 @@ public class SecurityConfig {
 	}
 
 	@Bean()
-	public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.authorizeHttpRequests((authorizeHttpRequests) -> {
 			authorizeHttpRequests.requestMatchers("/").permitAll();
 			authorizeHttpRequests.requestMatchers("/about").permitAll();
 			authorizeHttpRequests.requestMatchers("/webjars/**").permitAll();
-			authorizeHttpRequests.requestMatchers(OAUTH_LOGIN).permitAll();
+			authorizeHttpRequests.requestMatchers(DEFAULT_LOGIN_PAGE_URL).permitAll();
 		});
 
 		httpSecurity.oauth2Login((oauth2Login) -> {
 			oauth2Login.clientRegistrationRepository(registrationRepository);
-			oauth2Login.loginPage(OAUTH_LOGIN);
+			oauth2Login.loginPage(DEFAULT_LOGIN_PAGE_URL);
 
 			oauth2Login.authorizationEndpoint((authorizationEndpoint) -> {
 				authorizationEndpoint.baseUri(fromUriString(OAUTH_AUTHORIZE).buildAndExpand("").toString());

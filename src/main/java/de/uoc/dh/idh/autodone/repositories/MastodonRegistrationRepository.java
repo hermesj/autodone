@@ -1,6 +1,7 @@
 package de.uoc.dh.idh.autodone.repositories;
 
 import static de.uoc.dh.idh.autodone.config.SecurityConfig.OAUTH_REDIRECT;
+import static de.uoc.dh.idh.autodone.config.SecurityConfig.SCHEME;
 import static org.springframework.security.oauth2.core.AuthorizationGrantType.AUTHORIZATION_CODE;
 import static org.springframework.security.oauth2.core.ClientAuthenticationMethod.CLIENT_SECRET_POST;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentContextPath;
@@ -52,10 +53,10 @@ public class MastodonRegistrationRepository implements ClientRegistrationReposit
 		builder.clientName(buildProperties.getName());
 		builder.clientSecret(instance.clientSecret);
 
-		builder.authorizationUri(fromPath(MASTODON_OAUTH_AUTHORIZE).scheme("http").host(domain).build().toString());
+		builder.authorizationUri(fromPath(MASTODON_OAUTH_AUTHORIZE).scheme(SCHEME).host(domain).build().toString());
 		builder.redirectUri(fromCurrentContextPath().path(OAUTH_REDIRECT).buildAndExpand(domain).toString());
-		builder.tokenUri(fromPath(MASTODON_OAUTH_TOKEN).scheme("http").host(domain).build().toString());
-		builder.userInfoUri(fromPath(MASTODON_OAUTH_USERINFO).scheme("http").host(domain).build().toString());
+		builder.tokenUri(fromPath(MASTODON_OAUTH_TOKEN).scheme(SCHEME).host(domain).build().toString());
+		builder.userInfoUri(fromPath(MASTODON_OAUTH_USERINFO).scheme(SCHEME).host(domain).build().toString());
 
 		builder.scope(MASTODON_OAUTH_SCOPES.split(" "));
 		builder.userNameAttributeName("username");

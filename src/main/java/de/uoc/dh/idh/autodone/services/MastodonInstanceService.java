@@ -1,6 +1,7 @@
 package de.uoc.dh.idh.autodone.services;
 
 import static de.uoc.dh.idh.autodone.config.SecurityConfig.OAUTH_REDIRECT;
+import static de.uoc.dh.idh.autodone.config.SecurityConfig.SCHEME;
 import static org.springframework.web.reactive.function.BodyInserters.fromFormData;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentContextPath;
 import static org.springframework.web.util.UriComponentsBuilder.fromPath;
@@ -51,7 +52,7 @@ public class MastodonInstanceService {
 	}
 
 	private MastodonInstance identify(String domain) {
-		var client = WebClient.create(fromPath(MASTODON_API_INSTANCE).scheme("http").host(domain).build().toString());
+		var client = WebClient.create(fromPath(MASTODON_API_INSTANCE).scheme(SCHEME).host(domain).build().toString());
 		return client.get().retrieve().bodyToMono(MastodonInstance.class).block();
 	}
 
@@ -62,7 +63,7 @@ public class MastodonInstanceService {
 		formData.add("scopes", MASTODON_OAUTH_SCOPES);
 		formData.add("website", fromCurrentContextPath().build().toString());
 
-		var client = WebClient.create(fromPath(MASTODON_API_APPS).scheme("http").host(domain).build().toString());
+		var client = WebClient.create(fromPath(MASTODON_API_APPS).scheme(SCHEME).host(domain).build().toString());
 		return client.post().body(fromFormData(formData)).retrieve().bodyToMono(MastodonInstance.class).block();
 	}
 
