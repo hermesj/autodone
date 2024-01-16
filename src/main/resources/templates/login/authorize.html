@@ -1,0 +1,31 @@
+<html>
+
+<th:block th:insert="~{layout/head}" th:with="title='login'"></th:block>
+
+<body>
+  <th:block th:insert="~{layout/navbar}"></th:block>
+
+  <div class="translate-middle position-absolute start-50 top-50">
+    <div class="card">
+      <div class="card-header">
+        <strong th:text="${instance.domain}"></strong>
+        (v<small th:text="${instance.version}"></small>)
+      </div>
+      <div class="card-body">
+        <p class="card-text"><strong th:text="${instance.title}"></strong></p>
+        <p th:text="${instance.description}" class="card-text"></p>
+        <th:block th:if="${not #lists.isEmpty(instance.rules)}">
+          <p class="card-text"><strong>Instance Rules</strong></p>
+          <ul>
+            <li th:each="rule : ${instance.rules}" th:text="${rule.text}">
+          </ul>
+        </th:block>
+      </div>
+      <div class="card-footer text-end">
+        <a th:href="@{${endpoint}}" class="btn btn-outline-primary">Authorize</a>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

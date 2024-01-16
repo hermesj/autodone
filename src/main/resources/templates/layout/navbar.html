@@ -1,0 +1,47 @@
+<nav class="navbar navbar-expand-md">
+  <div class="container-fluid">
+    <a class="navbar-brand" th:text="${#buildProperties.name}" th:href="@{/}"></a>
+
+    <button class="navbar-toggler" data-bs-target="#navbar" data-bs-toggle="collapse" type="button">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbar">
+      <!-- <small th:text="'(v' + ${#buildProperties.version} + ')'" class="navbar-text text-body-tertiary"></small> -->
+
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a th:classappend="${#servletPath} == '/' ? 'active'" th:href="@{/}" class="nav-link">Home</a>
+        </li>
+        <li class="nav-item">
+          <a th:classappend="${#servletPath} == '/about' ? 'active'" th:href="@{/about}" class="nav-link">About</a>
+        </li>
+      </ul>
+
+      <ul class="navbar-nav">
+        <li sec:authorize="!isAuthenticated()" class="nav-item">
+          <a th:classappend="${#servletPath} == '/login' ? 'active'" th:href="@{/login}" class="nav-link">Login</a>
+        </li>
+        <li sec:authorize="isAuthenticated()" class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button">
+            <strong th:text="'@' + ${#authentication.name}"></strong>
+            (<th:block th:text="${#authentication.authorizedClientRegistrationId}"></th:block>)
+          </a>
+          <div class="dropdown-menu dropdown-menu-end">
+            <div class="dropdown-item disabled py-2 text-center">
+              <img th:src="${#authentication.principal.attributes['avatar']}" class="img-fluid rounded">
+            </div>
+            <hr class="dropdown-divider">
+            <div class="dropdown-item">TODO 1</div>
+            <div class="dropdown-item">TODO 2</div>
+            <div class="dropdown-item">TODO 3</div>
+            <hr class="dropdown-divider">
+            <form th:action="@{/logout}" class="m-0" method="post">
+              <button class="dropdown-item" type="submit">Logout</button>
+            </form>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,33 @@
+<html>
+
+<th:block th:insert="~{layout/head}" th:with="title='login'"></th:block>
+
+<body>
+  <th:block th:insert="~{layout/navbar}"></th:block>
+
+  <datalist id="instances">
+    <option th:each="instance : ${instances}" th:value="${instance.domain}">
+  </datalist>
+
+  <div class="translate-middle position-absolute start-50 top-50">
+    <form th:action="@{/login}" class="m-0" method="post">
+      <div th:if="${exception}" th:text="${exception}" class="alert alert-danger"></div>
+      <div class="card">
+        <div class="card-header">
+          <strong>Instance Login</strong>
+        </div>
+        <div class="card-body">
+          <div class="form-floating">
+            <input placeholder required class="form-control" list="instances" name="domain">
+            <label class="form-label">Enter Mastodon Domain</label>
+          </div>
+        </div>
+        <div class="card-footer text-end">
+          <button class="btn btn-outline-primary" type="submit">Proceed</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</body>
+
+</html>
