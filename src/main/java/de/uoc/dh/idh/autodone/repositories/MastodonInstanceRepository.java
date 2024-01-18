@@ -3,11 +3,11 @@ package de.uoc.dh.idh.autodone.repositories;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import de.uoc.dh.idh.autodone.entities.MastodonInstance;
+import de.uoc.dh.idh.autodone.entities.MastodonInstanceEntity;
 
 @Repository()
-public interface MastodonInstanceRepository extends CrudRepository<MastodonInstance, String> {
+public interface MastodonInstanceRepository extends CrudRepository<MastodonInstanceEntity, String> {
 
-	public MastodonInstance findByDomain(String domain);
+	public MastodonInstanceEntity findByDomain(String domain);
 
 }

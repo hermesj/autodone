@@ -13,7 +13,7 @@ import jakarta.persistence.Transient;
 
 @Entity()
 @JsonNaming(SnakeCaseStrategy.class)
-public class MastodonInstance {
+public class MastodonInstanceEntity {
 
 	@Id()
 	public String domain;

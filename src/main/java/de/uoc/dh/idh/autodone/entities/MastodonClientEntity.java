@@ -10,8 +10,8 @@ import jakarta.persistence.IdClass;
 // classpath:org/springframework/security/oauth2/client/oauth2-client-schema.sql
 
 @Entity(name = "oauth2_authorized_client")
-@IdClass(MastodonClient.PrimaryKey.class)
-public class MastodonClient {
+@IdClass(MastodonClientEntity.PrimaryKey.class)
+public class MastodonClientEntity {
 
 	@Id()
 	@Column(columnDefinition = "VARCHAR(100) NOT NULL")
