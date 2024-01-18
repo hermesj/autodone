@@ -39,6 +39,10 @@ public class SecurityConfig {
 			authorizeHttpRequests.requestMatchers("/about").permitAll();
 			authorizeHttpRequests.requestMatchers("/webjars/**").permitAll();
 			authorizeHttpRequests.requestMatchers(DEFAULT_LOGIN_PAGE_URL).permitAll();
+
+			if (getEnvironment().matchesProfiles("test")) {
+				authorizeHttpRequests.anyRequest().permitAll();
+			}
 		});
 
 		httpSecurity.oauth2Login((oauth2Login) -> {
