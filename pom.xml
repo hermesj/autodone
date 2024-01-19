@@ -39,7 +39,7 @@
 				</executions>
 			</plugin>
 
-    </plugins>
+		</plugins>
 	</build>
 
 	<dependencies>
