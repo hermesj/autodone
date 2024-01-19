@@ -1,0 +1,70 @@
+version: "3"
+
+x-anchor:
+  service: &service
+    hostname: localhost
+    environment: &environment
+
+      # AUTODONE
+      SERVER_PORT: 4000
+      SPRING_PROFILES_ACTIVE: test
+
+      # MASTODON
+      LOCAL_DOMAIN: $HOSTNAME:3000
+      MASTODON_WEB_DOMAIN: $HOSTNAME:3000
+
+      MASTODON_ADMIN_EMAIL: autodone@localhost
+      MASTODON_ADMIN_USERNAME: autodone
+      MASTODON_ADMIN_PASSWORD: autodone
+
+      ALLOW_EMPTY_PASSWORD: yes
+      MASTODON_DATABASE_HOST: postgres
+      MASTODON_DATABASE_NAME: autodone
+      MASTODON_DATABASE_USERNAME: autodone
+      MASTODON_DATABASE_PASSWORD: autodone
+      MASTODON_ELASTICSEARCH_ENABLED: false
+      MASTODON_REDIS_HOST: redis
+
+      # POSTGRES
+      POSTGRES_DB: autodone
+      POSTGRES_USER: autodone
+      POSTGRES_PASSWORD: autodone
+
+services:
+  autodone:
+    <<: *service
+    command: mvn -f /src spring-boot:run
+    image: docker.io/maven:3-eclipse-temurin-17-alpine
+    ports: [4000:4000]
+    volumes: [$PWD:/src]
+
+  mastodon:
+    <<: *service
+    image: docker.io/bitnami/mastodon:4
+    ports: [3000:3000]
+    environment:
+      <<: *environment
+      MASTODON_MODE: web
+
+  # mastodon-streaming:
+  #   <<: *service
+  #   image: docker.io/bitnami/mastodon:4
+  #   ports: [4000:4000]
+  #   environment:
+  #     <<: *environment
+  #     MASTODON_MODE: streaming
+
+  # mastodon-sidekiq:
+  #   <<: *service
+  #   image: docker.io/bitnami/mastodon:4
+  #   environment:
+  #     <<: *environment
+  #     MASTODON_MODE: sidekiq
+
+  postgres:
+    <<: *service
+    image: docker.io/postgres:16-alpine
+
+  redis:
+    <<: *service
+    image: docker.io/redis:7-alpine
