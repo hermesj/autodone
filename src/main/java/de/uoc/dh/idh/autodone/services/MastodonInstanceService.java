@@ -2,6 +2,7 @@ package de.uoc.dh.idh.autodone.services;
 
 import static de.uoc.dh.idh.autodone.config.SecurityConfig.OAUTH_REDIRECT;
 import static de.uoc.dh.idh.autodone.config.SecurityConfig.SCHEME;
+import static de.uoc.dh.idh.autodone.utils.ObjectUtils.mergeFields;
 import static org.springframework.web.reactive.function.BodyInserters.fromFormData;
 import static org.springframework.web.reactive.function.client.WebClient.create;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentContextPath;
@@ -39,24 +40,25 @@ public class MastodonInstanceService {
 	}
 
 	public MastodonInstanceEntity getOne(String domain) {
-		var instance = instanceRepository.findByDomain(domain);
-		var metadata = identify(domain);
-
-		if (instance == null) {
-			instance = register(metadata.domain);
-			instance.domain = metadata.domain;
-			instanceRepository.save(instance);
-		}
-
-		return metadata;
+		return instanceRepository.findOneByDomain(domain);
 	}
 
-	private MastodonInstanceEntity identify(String domain) {
+	public MastodonInstanceEntity getOneWithMetadata(String domain) {
+		var instance = mergeFields(getOne(domain), getMetadata(domain));
+
+		if (instance.uuid == null) {
+			instance = instanceRepository.save(mergeFields(registerApp(instance.domain), instance));
+		}
+
+		return instance;
+	}
+
+	private MastodonInstanceEntity getMetadata(String domain) {
 		var http = create(fromPath(MASTODON_API_INSTANCE).scheme(SCHEME).host(domain).build().toString());
 		return http.get().retrieve().bodyToMono(MastodonInstanceEntity.class).block();
 	}
 
-	private MastodonInstanceEntity register(String domain) {
+	private MastodonInstanceEntity registerApp(String domain) {
 		var formData = new LinkedMultiValueMap<String, String>();
 		formData.add("client_name", buildProperties.getName());
 		formData.add("redirect_uris", fromCurrentContextPath().path(OAUTH_REDIRECT).buildAndExpand(domain).toString());

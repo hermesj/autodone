@@ -30,7 +30,7 @@ public class LoginController {
 	@PostMapping()
 	public String post(Model model, @RequestParam() String domain) {
 		try {
-			model.addAttribute("instance", instanceService.getOne(domain));
+			model.addAttribute("instance", instanceService.getOneWithMetadata(domain));
 			model.addAttribute("redirect", fromUriString(OAUTH_AUTHORIZE).buildAndExpand(domain).toString());
 			return "login/authorize";
 		} catch (Exception exception) {
