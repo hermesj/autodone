@@ -10,11 +10,11 @@ public class ObjectUtils {
 			if (target.getClass().isAssignableFrom(source.getClass())) {
 				for (var field : source.getClass().getDeclaredFields()) {
 					try {
-						var sourceField = field.get(source);
-						var targetField = field.get(target);
+						var sourceValue = field.get(source);
+						var targetValue = field.get(target);
 
-						if (sourceField != null && targetField == null) {
-							field.set(target, sourceField);
+						if (sourceValue != null && targetValue == null) {
+							field.set(target, sourceValue);
 						}
 					} catch (Exception exception) {
 						continue;
