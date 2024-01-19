@@ -1,8 +1,11 @@
 package de.uoc.dh.idh.autodone.config;
 
 import static de.uoc.dh.idh.autodone.AutodoneApplication.getEnvironment;
+import static org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter.DEFAULT_FILTER_PROCESSES_URI;
+import static org.springframework.security.oauth2.client.web.server.DefaultServerOAuth2AuthorizationRequestResolver.DEFAULT_AUTHORIZATION_REQUEST_PATTERN;
+import static org.springframework.security.oauth2.client.web.server.DefaultServerOAuth2AuthorizationRequestResolver.DEFAULT_REGISTRATION_ID_URI_VARIABLE_NAME;
 import static org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter.DEFAULT_LOGIN_PAGE_URL;
-import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
+import static org.springframework.web.util.pattern.PathPatternParser.defaultInstance;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -18,11 +21,20 @@ import de.uoc.dh.idh.autodone.repositories.MastodonRegistrationRepository;
 @Configuration()
 public class SecurityConfig {
 
-	public static final String OAUTH_AUTHORIZE = DEFAULT_LOGIN_PAGE_URL + "/auth/{domain}";
+	public static final String OAUTH_AUTHORIZE;
 
-	public static final String OAUTH_REDIRECT = DEFAULT_LOGIN_PAGE_URL + "/code/{domain}";
+	public static final String OAUTH_REDIRECT;
 
-	public static final String SCHEME = getEnvironment().matchesProfiles("test") ? "http" : "https";
+	public static final String SCHEME;
+
+	static {
+		var rootPattern = defaultInstance.parse(DEFAULT_FILTER_PROCESSES_URI);
+		var pathPattern = defaultInstance.parse("{" + DEFAULT_REGISTRATION_ID_URI_VARIABLE_NAME + "}");
+
+		OAUTH_AUTHORIZE = DEFAULT_AUTHORIZATION_REQUEST_PATTERN;
+		OAUTH_REDIRECT = rootPattern.combine(pathPattern).toString();
+		SCHEME = getEnvironment().matchesProfiles("test") ? "http" : "https";
+	}
 
 	@Autowired()
 	private MastodonRegistrationRepository registrationRepository;
@@ -39,24 +51,21 @@ public class SecurityConfig {
 			authorizeHttpRequests.requestMatchers("/about").permitAll();
 			authorizeHttpRequests.requestMatchers("/webjars/**").permitAll();
 			authorizeHttpRequests.requestMatchers(DEFAULT_LOGIN_PAGE_URL).permitAll();
-
-			if (getEnvironment().matchesProfiles("test")) {
-				authorizeHttpRequests.anyRequest().permitAll();
-			}
 		});
 
 		httpSecurity.oauth2Login((oauth2Login) -> {
 			oauth2Login.clientRegistrationRepository(registrationRepository);
 			oauth2Login.loginPage(DEFAULT_LOGIN_PAGE_URL);
-
-			oauth2Login.authorizationEndpoint((authorizationEndpoint) -> {
-				authorizationEndpoint.baseUri(fromUriString(OAUTH_AUTHORIZE).buildAndExpand("").toString());
-			});
-
-			oauth2Login.redirectionEndpoint((redirectionEndpoint) -> {
-				redirectionEndpoint.baseUri(fromUriString(OAUTH_REDIRECT).buildAndExpand("*").toString());
-			});
 		});
+
+		if (getEnvironment().matchesProfiles("test")) {
+			httpSecurity.csrf((csrf) -> csrf.disable());
+			httpSecurity.headers((headers) -> headers.disable());
+
+			httpSecurity.authorizeHttpRequests((authorizeHttpRequests) -> {
+				authorizeHttpRequests.anyRequest().permitAll();
+			});
+		}
 
 		return httpSecurity.build();
 	}
