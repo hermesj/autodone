@@ -8,6 +8,8 @@ import de.uoc.dh.idh.autodone.entities.MastodonInstanceEntity;
 @Repository()
 public interface MastodonInstanceRepository extends CrudRepository<MastodonInstanceEntity, String> {
 
-	public MastodonInstanceEntity findByDomain(String domain);
+	public MastodonInstanceEntity findOneByDomain(String domain);
+
+	public MastodonInstanceEntity getOneByDomain(String domain);
 
 }

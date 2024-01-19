@@ -10,13 +10,12 @@ import static org.springframework.web.util.pattern.PathPatternParser.defaultInst
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.oauth2.client.JdbcOAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.web.SecurityFilterChain;
 
 import de.uoc.dh.idh.autodone.repositories.MastodonRegistrationRepository;
+import de.uoc.dh.idh.autodone.services.MastodonClientService;
 
 @Configuration()
 public class SecurityConfig {
@@ -37,11 +36,14 @@ public class SecurityConfig {
 	}
 
 	@Autowired()
+	private MastodonClientService clientService;
+
+	@Autowired()
 	private MastodonRegistrationRepository registrationRepository;
 
 	@Bean()
-	public OAuth2AuthorizedClientService authorizedClientService(JdbcOperations operations) {
-		return new JdbcOAuth2AuthorizedClientService(operations, registrationRepository);
+	public OAuth2AuthorizedClientService authorizedClientService() {
+		return clientService;
 	}
 
 	@Bean()

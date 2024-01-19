@@ -45,7 +45,7 @@ public class MastodonRegistrationRepository implements ClientRegistrationReposit
 	@Override()
 	public ClientRegistration findByRegistrationId(String domain) {
 		var builder = withRegistrationId(domain);
-		var instance = instanceRepository.findByDomain(domain);
+		var instance = instanceRepository.findOneByDomain(domain);
 
 		builder.authorizationGrantType(AUTHORIZATION_CODE);
 		builder.clientAuthenticationMethod(CLIENT_SECRET_POST);
