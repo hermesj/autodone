@@ -3,6 +3,7 @@ package de.uoc.dh.idh.autodone.services;
 import static de.uoc.dh.idh.autodone.config.SecurityConfig.OAUTH_REDIRECT;
 import static de.uoc.dh.idh.autodone.config.SecurityConfig.SCHEME;
 import static org.springframework.web.reactive.function.BodyInserters.fromFormData;
+import static org.springframework.web.reactive.function.client.WebClient.create;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentContextPath;
 import static org.springframework.web.util.UriComponentsBuilder.fromPath;
 
@@ -11,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import de.uoc.dh.idh.autodone.entities.MastodonInstanceEntity;
 import de.uoc.dh.idh.autodone.repositories.MastodonInstanceRepository;
@@ -52,8 +52,8 @@ public class MastodonInstanceService {
 	}
 
 	private MastodonInstanceEntity identify(String domain) {
-		var client = WebClient.create(fromPath(MASTODON_API_INSTANCE).scheme(SCHEME).host(domain).build().toString());
-		return client.get().retrieve().bodyToMono(MastodonInstanceEntity.class).block();
+		var http = create(fromPath(MASTODON_API_INSTANCE).scheme(SCHEME).host(domain).build().toString());
+		return http.get().retrieve().bodyToMono(MastodonInstanceEntity.class).block();
 	}
 
 	private MastodonInstanceEntity register(String domain) {
@@ -63,8 +63,8 @@ public class MastodonInstanceService {
 		formData.add("scopes", MASTODON_OAUTH_SCOPES);
 		formData.add("website", fromCurrentContextPath().build().toString());
 
-		var client = WebClient.create(fromPath(MASTODON_API_APPS).scheme(SCHEME).host(domain).build().toString());
-		return client.post().body(fromFormData(formData)).retrieve().bodyToMono(MastodonInstanceEntity.class).block();
+		var http = create(fromPath(MASTODON_API_APPS).scheme(SCHEME).host(domain).build().toString());
+		return http.post().body(fromFormData(formData)).retrieve().bodyToMono(MastodonInstanceEntity.class).block();
 	}
 
 }

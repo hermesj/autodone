@@ -2,6 +2,7 @@ package de.uoc.dh.idh.autodone.repositories;
 
 import static de.uoc.dh.idh.autodone.config.SecurityConfig.OAUTH_REDIRECT;
 import static de.uoc.dh.idh.autodone.config.SecurityConfig.SCHEME;
+import static org.springframework.security.oauth2.client.registration.ClientRegistration.withRegistrationId;
 import static org.springframework.security.oauth2.core.AuthorizationGrantType.AUTHORIZATION_CODE;
 import static org.springframework.security.oauth2.core.ClientAuthenticationMethod.CLIENT_SECRET_POST;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentContextPath;
@@ -43,7 +44,7 @@ public class MastodonRegistrationRepository implements ClientRegistrationReposit
 
 	@Override()
 	public ClientRegistration findByRegistrationId(String domain) {
-		var builder = ClientRegistration.withRegistrationId(domain);
+		var builder = withRegistrationId(domain);
 		var instance = instanceRepository.findByDomain(domain);
 
 		builder.authorizationGrantType(AUTHORIZATION_CODE);

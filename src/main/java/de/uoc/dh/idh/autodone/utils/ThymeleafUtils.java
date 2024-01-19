@@ -1,8 +1,8 @@
 package de.uoc.dh.idh.autodone.utils;
 
+import static java.util.Arrays.asList;
 import static org.springframework.web.util.ServletRequestPathUtils.PATH_ATTRIBUTE;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,7 +30,7 @@ public class ThymeleafUtils extends AbstractDialect implements IExpressionObject
 
 			@Override()
 			public Set<String> getAllExpressionObjectNames() {
-				return new HashSet<>(Arrays.asList("buildProperties", "servletPath"));
+				return new HashSet<>(asList("buildProperties", "servletPath"));
 			}
 
 			@Override()
