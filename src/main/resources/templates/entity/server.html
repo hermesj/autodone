@@ -1,0 +1,35 @@
+<!doctype html>
+<html class="h-100">
+
+<th:block th:insert="~{elements/head}" th:with="title=|login|" />
+
+<body class="h-100 d-flex flex-column">
+  <th:block th:insert="~{elements/navbar}" />
+
+  <main class="flex-grow-1 container d-flex align-items-center justify-content-center">
+    <div class="card" style="max-width: 25rem;">
+      <img th:src="@{${server.thumbnail.url}}" alt="${server.title}" class="card-img-top">
+      <div class="card-body">
+        <p class="card-text">
+          <strong th:text="${server.title}"></strong>
+          <small th:text="|(v${server.version})|" class="text-body-tertiary"></small>
+        </p>
+        <p th:text="${server.description}" class="card-text"></p>
+        <th:block th:if="${!#lists.isEmpty(server.rules)}">
+          <p class="card-text"><strong>Server Rules</strong></p>
+          <ul class="card-text">
+            <li th:each="rule : ${server.rules}" th:text="${rule.text}"></li>
+          </ul>
+        </th:block>
+      </div>
+      <div class="card-footer d-flex justify-content-between">
+        <a th:href="@{/login}" class="btn btn-outline-secondary">Cancel</a>
+        <a th:href="@{${uri}}" class="btn btn-outline-primary">Authorize</a>
+      </div>
+    </div>
+  </main>
+
+  <th:block th:insert="~{elements/navend}" />
+</body>
+
+</html>

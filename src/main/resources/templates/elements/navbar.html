@@ -1,0 +1,58 @@
+<nav class="mb-3 border-bottom navbar navbar-expand-md">
+  <div class="container-fluid">
+    <strong th:text="${#pom.name}" class="navbar-brand text-uppercase"></strong>
+
+    <button class="navbar-toggler" data-bs-target="#navbar" data-bs-toggle="collapse">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="me-auto navbar-nav">
+        <li class="nav-item">
+          <a th:classappend="${#path} == '/' ? 'active'" th:href="@{/}" class="nav-link">Home</a>
+        </li>
+        <li class="nav-item">
+          <a th:classappend="${#path} == '/about' ? 'active'" th:href="@{/about}" class="nav-link">About</a>
+        </li>
+        <li class="nav-item">
+          <a th:classappend="${#path} == '/usage' ? 'active'" th:href="@{/usage}" class="nav-link">Usage</a>
+        </li>
+      </ul>
+
+      <ul class="navbar-nav">
+        <li sec:authorize="!isAuthenticated()" class="nav-item">
+          <a th:classappend="${#path} == '/login' ? 'active'" th:href="@{/login}" class="nav-link">Login</a>
+        </li>
+        <li sec:authorize="isAuthenticated()" class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+            <strong th:text="|@${#authentication.name}|"></strong>
+            <th:block th:text="|(${#authentication.authorizedClientRegistrationId})|" />
+          </a>
+          <div class="dropdown-menu dropdown-menu-end">
+            <div class="py-2 text-center dropdown-item disabled">
+              <img th:src="${#authentication.principal.attributes.avatar}" alt="Avatar" class="img-fluid rounded">
+            </div>
+            <hr class="dropdown-divider">
+            <th:block th:with="url=|//${#authentication.authorizedClientRegistrationId}/@${#authentication.name}|">
+              <a th:href="${url}" class="dropdown-item" target="_blank">Mastodon Profile</a>
+            </th:block>
+            <hr class="dropdown-divider">
+            <a th:classappend="${#path} == '/group' ? 'active'" th:href="@{/group}" class="dropdown-item">
+              Group Dashboard
+            </a>
+            <a th:classappend="${#path} == '/status' ? 'active'" th:href="@{/status}" class="dropdown-item">
+              Status Dashboard
+            </a>
+            <a th:classappend="${#path} == '/media' ? 'active'" th:href="@{/media}" class="dropdown-item">
+              Media Dashboard
+            </a>
+            <hr class="dropdown-divider">
+            <form th:action="@{/logout}" class="m-0" method="post">
+              <button class="dropdown-item">Logout</button>
+            </form>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

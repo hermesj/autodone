@@ -1,0 +1,49 @@
+<!doctype html>
+<html class="h-100">
+
+<th:block th:insert="~{elements/head}" th:with="title=|group list|" />
+
+<body class="h-100 d-flex flex-column">
+  <th:block th:insert="~{elements/navbar}" />
+
+  <main class="flex-grow-1 container">
+    <h1>Group Dashboard</h1>
+
+    <div class="mb-3 accordion" id="accordion">
+      <div class="accordion-item">
+        <div class="accordion-header">
+          <button class="accordion-button collapsed fw-bold" data-bs-target="#fold-1" data-bs-toggle="collapse">
+            Create new Group
+          </button>
+        </div>
+        <div class="accordion-collapse collapse" id="fold-1" data-bs-parent="#accordion">
+          <div class="accordion-body">
+            <th:block th:insert="~{forms/group}" />
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <div class="accordion-header">
+          <button class="accordion-button collapsed fw-bold" data-bs-target="#fold-2" data-bs-toggle="collapse">
+            Import new Group
+          </button>
+        </div>
+        <div class="accordion-collapse collapse" id="fold-2" data-bs-parent="#accordion">
+          <div class="accordion-body">
+            <th:block th:insert="~{forms/import}" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <th:block th:if="${page.hasContent()}">
+      <h2>Group List</h2>
+      <th:block th:insert="~{tables/group}" />
+      <th:block th:if="${page.totalPages} > 1" th:insert="~{elements/pager}" />
+    </th:block>
+  </main>
+
+  <th:block th:insert="~{elements/navend}" />
+</body>
+
+</html>

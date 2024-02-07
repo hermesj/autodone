@@ -1,0 +1,14 @@
+<form th:action="@{/import}" th:method="post" class="m-0" enctype="multipart/form-data">
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <label class="form-label fw-bold" for="file">Import File</label>
+      <div class="form-floating">
+        <input placeholder required accept=".tsv" class="form-control" id="file" name="file" type="file">
+        <label class="form-label">File to Import Group from</label>
+      </div>
+    </div>
+  </div>
+  <div class="accordion-footer d-flex justify-content-end">
+    <button class="btn btn-outline-primary">Import</button>
+  </div>
+</form>

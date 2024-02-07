@@ -1,0 +1,72 @@
+<head>
+  <title th:if="!${title}" th:text="${#pom.name}"></title>
+  <title th:if="${title}" th:text="|${title} // ${#pom.name}|"></title>
+
+  <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+  <link th:href="@{/webjars/bootstrap-icons/font/bootstrap-icons.min.css}" rel="stylesheet">
+  <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
+  <style>
+    @keyframes hide {
+      to {
+        opacity: 0;
+      }
+    }
+
+    @keyframes zero {
+      to {
+        border: 0;
+        height: 0;
+        margin: 0;
+        padding: 0;
+      }
+    }
+
+    nav.navbar {
+      background-color: rgba(var(--bs-body-color-rgb), .03);
+    }
+
+    table.table th {
+      background-color: rgba(var(--bs-body-color-rgb), .03);
+    }
+
+    .accordion-footer {
+      background-color: rgba(var(--bs-body-color-rgb), .03);
+      border-top: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
+      margin: 0 calc(var(--bs-accordion-body-padding-x) * -1) calc(var(--bs-accordion-body-padding-y) * -1);
+      padding: .5rem 1rem;
+    }
+
+    .alert {
+      animation: hide .5s 5s forwards, zero .5s 5.5s forwards;
+    }
+
+    .form-control::file-selector-button {
+      display: none;
+    }
+
+    .form-floating>label {
+      color: rgba(var(--bs-body-color-rgb), .65);
+    }
+  </style>
+
+  <script>
+    (() => {
+      const html = document.querySelector('html');
+      const mode = matchMedia('(prefers-color-scheme: dark)');
+      const work = () => html.dataset.bsTheme = mode.matches ? 'dark' : 'light';
+
+      work(mode.addEventListener('change', work, { passive: true }));
+    })();
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const data = document.querySelectorAll('[data-confirm]');
+      data.forEach((node) => node.onclick = () => confirm('Are You sure?'));
+
+      const href = document.querySelectorAll('[href^="data:image"]');
+      href.forEach((node) => node.onclick = () => {
+        window.open().document.write(`<img src="${node.href}">`);
+      });
+    });
+  </script>
+</head>

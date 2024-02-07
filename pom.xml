@@ -8,30 +8,107 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.2.1</version>
+		<version>3.2.2</version>
 		<relativePath />
 	</parent>
+
+	<properties>
+		<java.version>17</java.version>
+	</properties>
 
 	<groupId>de.uoc.dh.idh</groupId>
 	<artifactId>autodone</artifactId>
 	<version>0.0.1</version>
 
 	<name>autodone</name>
-	<description>The autodone Project</description>
+	<description>
+		The autodone project provides an easy-to-use web service to upload and
+		schedule Mastodon status updates automatically from various sources.
+	</description>
+	<url>https://fedihum.org/@autodone</url>
 
-	<properties>
-		<java.version>17</java.version>
-	</properties>
+	<developers>
+		<developer>
+			<id>hermesj</id>
+			<name>Jürgen Hermes</name>
+			<email>hermesj@uni-koeln.de</email>
+		</developer>
+		<developer>
+			<id>schlusslicht</id>
+			<name>Philip Schildkamp</name>
+			<email>philip.schlildkamp@uni-koeln.de</email>
+		</developer>
+	</developers>
+
+	<organization>
+		<name>DH Cologne</name>
+		<url>https://dh.uni-koeln.de</url>
+	</organization>
+
+	<scm>
+		<connection>scm:git:git://github.com/dh-cologne/autodone</connection>
+		<url>https://github.com/dh-cologne/autodone</url>
+		<tag>main</tag>
+	</scm>
 
 	<build>
 		<plugins>
 
+			<!-- MASTODON ASSETS -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<mkdir
+									dir="${project.build.directory}/classes/static/images" />
+								<get
+									src="https://github.com/mastodon/mastodon/raw/main/public/oops.png"
+									dest="${project.build.directory}/classes/static/images/mastodon-error.png" />
+								<get
+									src="https://github.com/mastodon/mastodon/raw/main/app/javascript/images/preview.png"
+									dest="${project.build.directory}/classes/static/images/mastodon-hello.png" />
+								<get
+									src="https://github.com/mastodon/mastodon/raw/main/app/javascript/images/friends-cropped.png"
+									dest="${project.build.directory}/classes/static/images/mastodon-stars.png" />
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- EFFECTIVE POM -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-help-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>effective-pom</goal>
+						</goals>
+						<configuration>
+							<output>
+								${project.build.outputDirectory}/META-INF/maven/${project.groupId}/${project.artifactId}/pom.xml
+							</output>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- BUILDINFO PROPERTIES -->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>build-info</id>
+						<phase>generate-resources</phase>
 						<goals>
 							<goal>build-info</goal>
 						</goals>
@@ -70,10 +147,6 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-webflux</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.thymeleaf.extras</groupId>
 			<artifactId>thymeleaf-extras-springsecurity6</artifactId>
 		</dependency>
@@ -82,11 +155,11 @@
 			<artifactId>webjars-locator-core</artifactId>
 		</dependency>
 
-		<!-- LIBRARY -->
+		<!-- LIBRARIES -->
 		<dependency>
-			<groupId>com.univocity</groupId>
-			<artifactId>univocity-parsers</artifactId>
-			<version>2.9.1</version>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-model</artifactId>
+			<version>3.9.6</version>
 		</dependency>
 
 		<!-- WEBJARS -->
@@ -98,13 +171,18 @@
 		<dependency>
 			<groupId>org.webjars.npm</groupId>
 			<artifactId>bootstrap-icons</artifactId>
-			<version>1.11.2</version>
+			<version>1.11.3</version>
 		</dependency>
 
 		<!-- DEVELOP -->
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

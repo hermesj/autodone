@@ -1,0 +1,36 @@
+<div class="table-responsive border rounded mb-3">
+  <table class="table align-middle m-0">
+    <thead>
+      <tr>
+        <th>Status</th>
+        <th>Date</th>
+        <th th:if="${#path} != '/group'">Group</th>
+        <th class="text-end">Media</th>
+        <th class="text-end">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="status : ${page}" th:object="${status}">
+        <td>
+          <a th:href="@{/status(uuid=*{uuid})}" th:text="${#strings.abbreviate(status.status, 100)}"></a>
+        </td>
+        <td th:text="*{date}"></td>
+        <td th:if="${#path} != '/group'">
+          <a th:href="@{/group(uuid=*{group.uuid})}" th:text="*{group.name}"></a>
+        </td>
+        <td th:text="*{media} ? *{media.size()} : 0" class="text-end"></td>
+        <td class="text-end text-nowrap">
+          <a th:href="@{/status(uuid=*{uuid})}" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-eye-fill"></i>
+          </a>
+          <form th:method="delete" class="d-inline-block m-0">
+            <input th:value="*{uuid}" name="uuid" type="hidden">
+            <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Are You sure?')">
+              <i class="bi bi-trash-fill"></i>
+            </button>
+          </form>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

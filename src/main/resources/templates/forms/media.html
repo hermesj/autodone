@@ -1,0 +1,56 @@
+<form th:action="@{/media}" th:method="post" th:object="${media}" class="m-0" enctype="multipart/form-data">
+  <input th:field="*{status.uuid}" th:if="*{status}" type="hidden">
+  <input th:field="*{uuid}" th:if="*{uuid}" type="hidden">
+  <div class="row">
+    <div th:if="*{uuid}" class="col-md-6 mb-3">
+      <div class="col-md-12 mb-3">
+        <label class="form-label fw-bold" for="file">Media Preview</label>
+        <img th:title="*{description}" th:src="*{url}" class="border img-fluid rounded w-100">
+      </div>
+    </div>
+    <div th:classappend="'col-md-' + (*{uuid} ? 6 : 12)">
+      <div class="row">
+        <div th:if="!*{uuid}" class="col-md-6 mb-3">
+          <label class="form-label fw-bold" for="file">Media File</label>
+          <div class="form-floating">
+            <input placeholder required th:field="*{file}" accept="image/*" class="form-control" type="file">
+            <label class="form-label">File to attach Media from</label>
+          </div>
+        </div>
+        <div th:classappend="'col-md-' + (*{uuid} ? 12 : 6)" class="mb-3">
+          <label class="form-label fw-bold" for="status.uuid">Media Attachment</label>
+          <div th:if="*{status}" class="input-group">
+            <div class="form-floating">
+              <input placeholder readonly th:field="*{status.status}" class="form-control">
+              <label class="form-label">Status this Media is attached to</label>
+            </div>
+            <a th:href="@{/status(uuid=*{status.uuid})}" class="input-group-text d-flex btn btn-outline-primary">
+              <i class="bi bi-eye-fill"></i>
+            </a>
+          </div>
+          <div th:if="!*{status}" class="form-floating">
+            <select placeholder required th:field="*{status.uuid}" class="form-select">
+              <option selected value="">-</option>
+              <option th:each="status : ${status}" th:text="${status.status}" th:value="${status.uuid}"></option>
+            </select>
+            <label class="form-label">Status this Media is attached to</label>
+          </div>
+        </div>
+        <div th:classappend="'col-md-' + (*{uuid} ? 12 : 6)" class="mb-3">
+          <label class="form-label fw-bold" for="description">Media Description</label>
+          <div class="form-floating">
+            <input placeholder th:field="*{description}" class="form-control">
+            <label class="form-label">The Description for the attached Media</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="accordion-footer d-flex justify-content-end">
+    <th:block  th:if="*{uuid}">
+      <button data-confirm class="btn btn-outline-danger me-1" name="_method" value="delete">Delete</button>
+      <button class="btn btn-outline-secondary me-1" type="reset">Reset</button>
+    </th:block>
+    <button th:text="*{uuid} ? 'Update' : 'Create'" class="btn btn-outline-primary"></button>
+  </div>
+</form>

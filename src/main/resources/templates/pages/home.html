@@ -1,0 +1,29 @@
+<!doctype html>
+<html class="h-100">
+
+<th:block th:insert="~{elements/head}" th:with="title=|home|" />
+
+<body class="h-100 d-flex flex-column">
+  <th:block th:insert="~{elements/navbar}" />
+
+  <main class="flex-grow-1 container d-flex align-items-center justify-content-center">
+    <th:block th:with="style=|background: url(@{/images/mastodon-stars.png}) center;|">
+      <div th:style="${style}" class="p-5 border rounded shadow bg-body-tertiary text-center">
+        <h1 th:text="${#pom.name}" class="fw-bold text-body-emphasis"></h1>
+        <p th:text="${#pom.description}" class="mx-auto col-md-8 lead"></p>
+        <div class="mt-5">
+          <a th:href="@{/about}" class="me-3 btn btn-lg btn-outline-secondary">
+            About
+          </a>
+          <a th:href="@{/group}" class="btn btn-lg btn-primary">
+            Get started <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </th:block>
+  </main>
+
+  <th:block th:insert="~{elements/navend}" />
+</body>
+
+</html>

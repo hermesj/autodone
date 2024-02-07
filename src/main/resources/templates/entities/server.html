@@ -1,0 +1,47 @@
+<!doctype html>
+<html class="h-100">
+
+<th:block th:insert="~{elements/head}" th:with="title=|login|" />
+
+<body class="h-100 d-flex flex-column">
+  <th:block th:insert="~{elements/navbar}" />
+
+  <main class="flex-grow-1 container d-flex align-items-center justify-content-center">
+    <form th:action="@{${#path}}" th:method="post" class="m-0">
+      <div th:if="${param.error}" class="alert alert-danger" style="max-width: 25rem;">Authorization failed!</div>
+      <div th:if="${param.logout}" class="alert alert-primary" style="max-width: 25rem;">Logout successful!</div>
+
+      <datalist id="servers">
+        <option th:each="server : ${servers}" th:value="${server.domain}">
+      </datalist>
+
+      <div class="card" style="max-width: 25rem;">
+        <img th:src="@{/images/mastodon-hello.png}" alt="Mastodon" class="card-img-top">
+        <div class="card-body">
+          <p class="card-text">
+            <label class="form-label m-0 fw-bold" for="domain">Mastodon Login</label>
+          </p>
+          <p class="card-text input-group">
+            <span class="input-group-text">https://</span>
+            <span class="form-floating">
+              <input placeholder required class="form-control" id="domain" list="servers" name="domain">
+              <label class="form-label">mastodon.domain</label>
+            </span>
+          </p>
+          <p class="card-text"><strong>Need Help?</strong></p>
+          <ul class="card-text">
+            <li><a href="https://joinmastodon.org" target="_blank">Join Mastodon today</a></li>
+            <li><a href="https://instances.social" target="_blank">List of Servers</a></li>
+          </ul>
+        </div>
+        <div class="card-footer d-flex justify-content-end">
+          <button class="btn btn-outline-primary" type="submit">Proceed</button>
+        </div>
+      </div>
+    </form>
+  </main>
+
+  <th:block th:insert="~{elements/navend}" />
+</body>
+
+</html>

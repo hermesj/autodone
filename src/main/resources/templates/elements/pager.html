@@ -1,0 +1,21 @@
+<nav class="d-flex justify-content-center">
+  <ul class="pagination">
+    <li th:classappend="${page.isFirst()} ? 'disabled'" class="page-item">
+      <a th:href="${#uri.replaceQueryParam('page', 0).build()}" class="page-link">
+        <i class="bi bi-chevron-bar-left"></i>
+      </a>
+    </li>
+
+    <th:block th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}">
+      <li th:classappend="${page.number} == ${i} ? 'active'" class="page-item">
+        <a th:href="${#uri.replaceQueryParam('page', i).build()}" th:text="${i + 1}" class="page-link"></a>
+      </li>
+    </th:block>
+
+    <li th:classappend="${page.isLast()} ? 'disabled'" class="page-item">
+      <a th:href="${#uri.replaceQueryParam('page', page.totalPages - 1).build()}" class="page-link">
+        <i class="bi bi-chevron-bar-right"></i>
+      </a>
+    </li>
+  </ul>
+</nav>

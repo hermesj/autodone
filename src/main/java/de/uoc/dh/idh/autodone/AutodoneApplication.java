@@ -14,6 +14,8 @@ public class AutodoneApplication extends SpringApplication {
 
 	private static ConfigurableEnvironment environment;
 
+	//
+
 	public static ApplicationContext getContext() {
 		return context;
 	}
@@ -22,13 +24,19 @@ public class AutodoneApplication extends SpringApplication {
 		return environment;
 	}
 
+	//
+
 	public static void main(String[] args) {
 		new AutodoneApplication().run(args);
 	}
 
-	protected AutodoneApplication() {
+	//
+
+	public AutodoneApplication() {
 		super(AutodoneApplication.class);
 	}
+
+	//
 
 	@Override()
 	protected void applyInitializers(ConfigurableApplicationContext context) {
