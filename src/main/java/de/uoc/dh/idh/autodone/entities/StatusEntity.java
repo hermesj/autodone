@@ -5,6 +5,7 @@ import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.UUID;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -54,6 +55,6 @@ public class StatusEntity {
 	//
 
 	@Transient()
-	public Exception exception;
+	public List<Exception> exceptions = new ArrayList<Exception>();
 
 }
