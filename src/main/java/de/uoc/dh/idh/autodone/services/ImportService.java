@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.time.Instant;
@@ -30,6 +29,8 @@ import de.uoc.dh.idh.autodone.entities.StatusEntity;
 @Service()
 public class ImportService {
 
+	
+	//TODO change return value to GroupEntity
 	public String parse(InputStream inputStream) {
 		
 		//TODO: Set client ZoneID
@@ -131,8 +132,9 @@ public class ImportService {
 	}
 
 	private LocalDate parseDate(String dateString) {
-		String[] dateFormats = { "yyyy-MM-dd", "dd/MM/yyyy", "dd.MM.yyyy" };
+		String[] dateFormats = { "yyyy-MM-dd", "dd/MM/yyyy", "dd.MM.yyyy", "d.M.yyyy", "d/M/yyyy"};
 
+		String[] dateFormatsWithoutYear = { "MM-dd", "dd/MM", "dd.MM", "d.M", "d/M"};
 		for (String format : dateFormats) {
 			try {
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
@@ -141,11 +143,22 @@ public class ImportService {
 				// Continue trying other formats
 			}
 		}
+		
+	    for (String format : dateFormatsWithoutYear) {
+	        try {
+	            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+	            String dateStringWithCurrentYear = dateString + "." + Year.now(ZoneId.of("UTC"));
+	            formatter = DateTimeFormatter.ofPattern(format + ".yyyy");
+	            return LocalDate.parse(dateStringWithCurrentYear, formatter);
+	        } catch (DateTimeParseException e) {
+	        	// Continue trying other formats
+	        }
+	    }
 		return null;
 	}
 
 	private LocalTime parseTime(String timeString) {
-		String[] timeFormats = { "HH:mm:ss", "HH:mm" };
+		String[] timeFormats = { "HH:mm:ss", "HH:mm", "H:mm", "H:mm:ss"};
 
 		for (String format : timeFormats) {
 			try {
