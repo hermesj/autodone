@@ -9,7 +9,7 @@ import static de.uoc.dh.idh.autodone.utils.WebUtils.request;
 import static java.util.Map.of;
 import static org.springframework.data.domain.Sort.by;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -41,7 +41,7 @@ public class StatusService extends BaseService<StatusEntity> {
 		return statusRepository.findAll();
 	}
 
-	public Iterable<StatusEntity> getAll(LocalDateTime date) {
+	public Iterable<StatusEntity> getAll(Instant date) {
 		return statusRepository.findAllByDateAfterAndGroupEnabledTrue(date);
 	}
 

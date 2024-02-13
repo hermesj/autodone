@@ -3,7 +3,7 @@ package de.uoc.dh.idh.autodone.services;
 import static de.uoc.dh.idh.autodone.config.AutodoneConfig.AUTODONE_SCHEDULING;
 import static de.uoc.dh.idh.autodone.config.AutodoneConfig.AUTODONE_THREADPOOL;
 import static java.time.Duration.between;
-import static java.time.LocalDateTime.now;
+import static java.time.Instant.now;
 import static java.util.concurrent.Executors.newScheduledThreadPool;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -72,6 +72,7 @@ public class TimerService {
 	//
 
 	public ScheduledFuture<StatusEntity> scheduleStatus(StatusEntity status) {
+		
 		var delay = between(now(), status.date).getSeconds();
 		var future = scheduledStatus.get(status.uuid);
 

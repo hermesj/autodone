@@ -1,6 +1,6 @@
 package de.uoc.dh.idh.autodone.repositories;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -30,7 +30,7 @@ public interface StatusRepository extends BaseRepository<StatusEntity> {
 
 	public Iterable<StatusEntity> findAllByDateAfterAndGroupEnabledTrue(
 
-			LocalDateTime date
+			Instant date
 
 	);
 
@@ -64,7 +64,7 @@ public interface StatusRepository extends BaseRepository<StatusEntity> {
 
 			GroupEntity group,
 
-			LocalDateTime date
+			Instant date
 
 	);
 
