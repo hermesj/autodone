@@ -139,7 +139,7 @@ public class ImportService {
 	private LocalDate parseDate(String dateString) {
 		String[] dateFormats = { "yyyy-MM-dd", "dd/MM/yyyy", "dd.MM.yyyy", "d.M.yyyy", "d/M/yyyy" };
 
-		String[] dateFormatsWithoutYear = { "MM-dd", "dd/MM", "dd.MM", "d.M", "d/M" };
+		String[] dateFormatsWithoutYear = { "MM-dd", "dd/MM", "dd.MM.", "d.M.", "d/M" , "dd.MM", "d.M"};
 		for (String format : dateFormats) {
 			try {
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
