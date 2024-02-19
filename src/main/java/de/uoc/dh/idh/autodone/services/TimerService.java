@@ -72,20 +72,21 @@ public class TimerService {
 	//
 
 	public ScheduledFuture<StatusEntity> scheduleStatus(StatusEntity status) {
-		
 		var delay = between(now(), status.date).getSeconds();
 		var future = scheduledStatus.get(status.uuid);
 
-		if (delay > AUTODONE_SCHEDULING && future == null) {
-			future = scheduledStatus.put(status.uuid, scheduler.schedule(() -> {
-				scheduledStatus.remove(status.uuid);
-				return statusService.publish(status.uuid);
-			}, delay, SECONDS));
-		}
+		if (status.id == null) {
+			if (delay > AUTODONE_SCHEDULING && future == null) {
+				future = scheduledStatus.put(status.uuid, scheduler.schedule(() -> {
+					scheduledStatus.remove(status.uuid);
+					return statusService.publish(status.uuid);
+				}, delay, SECONDS));
+			}
 
-		if (status.media != null) {
-			for (var media : status.media) {
-				scheduleMedia(media);
+			if (status.media != null) {
+				for (var media : status.media) {
+					scheduleMedia(media);
+				}
 			}
 		}
 
@@ -109,11 +110,13 @@ public class TimerService {
 		var delay = between(now().plusSeconds(AUTODONE_SCHEDULING), media.status.date).getSeconds();
 		var future = scheduledMedia.get(media.uuid);
 
-		if (delay > AUTODONE_SCHEDULING && future == null) {
-			future = scheduledMedia.put(media.uuid, scheduler.schedule(() -> {
-				scheduledMedia.remove(media.uuid);
-				return mediaService.publish(media.uuid);
-			}, delay, SECONDS));
+		if (media.id == null) {
+			if (delay > AUTODONE_SCHEDULING && future == null) {
+				future = scheduledMedia.put(media.uuid, scheduler.schedule(() -> {
+					scheduledMedia.remove(media.uuid);
+					return mediaService.publish(media.uuid);
+				}, delay, SECONDS));
+			}
 		}
 
 		return future;
