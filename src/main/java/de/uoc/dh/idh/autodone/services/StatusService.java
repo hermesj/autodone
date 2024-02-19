@@ -42,7 +42,7 @@ public class StatusService extends BaseService<StatusEntity> {
 	}
 
 	public Iterable<StatusEntity> getAll(Instant date) {
-		return statusRepository.findAllByDateAfterAndGroupEnabledTrue(date);
+		return statusRepository.findAllByDateAfterAndGroupEnabledTrueAndIdIsNull(date);
 	}
 
 	public Page<StatusEntity> getPage(String page, String sort, GroupEntity group) {
