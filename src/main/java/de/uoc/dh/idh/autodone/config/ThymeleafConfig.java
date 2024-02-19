@@ -1,6 +1,7 @@
 package de.uoc.dh.idh.autodone.config;
 
 import static de.uoc.dh.idh.autodone.utils.WebUtils.href;
+import static java.time.Instant.now;
 import static java.util.Set.of;
 import static org.springframework.web.util.ServletRequestPathUtils.PATH_ATTRIBUTE;
 
@@ -27,7 +28,7 @@ public class ThymeleafConfig extends AbstractDialect implements IExpressionObjec
 
 	public ThymeleafConfig() {
 		super(ThymeleafConfig.class.getSimpleName());
-		expressionObjectNames = of("path", "pom", "uri");
+		expressionObjectNames = of("path", "pom", "time", "uri");
 	}
 
 	//
@@ -46,6 +47,7 @@ public class ThymeleafConfig extends AbstractDialect implements IExpressionObjec
 				return switch (expressionObjectName) {
 				case "path" -> context.getVariable(PATH_ATTRIBUTE).toString();
 				case "pom" -> projectUtils.projectModel;
+				case "time" -> now();
 				case "uri" -> href();
 				default -> null;
 				};
@@ -56,6 +58,7 @@ public class ThymeleafConfig extends AbstractDialect implements IExpressionObjec
 				return switch (expressionObjectName) {
 				case "path" -> true;
 				case "pom" -> true;
+				case "time" -> true;
 				case "uri" -> false;
 				default -> false;
 				};
