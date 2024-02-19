@@ -46,11 +46,11 @@
       </div>
     </div>
   </div>
-  <div class="accordion-footer d-flex justify-content-end">
-    <th:block  th:if="*{uuid}">
-      <button data-confirm class="btn btn-outline-danger me-1" name="_method" value="delete">Delete</button>
-      <button class="btn btn-outline-secondary me-1" type="reset">Reset</button>
-    </th:block>
+  <div class="accordion-footer d-flex flex-row-reverse">
     <button th:text="*{uuid} ? 'Update' : 'Create'" class="btn btn-outline-primary"></button>
+    <th:block  th:if="*{uuid}">
+      <button class="btn btn-outline-secondary me-1" type="reset">Reset</button>
+      <button data-confirm class="btn btn-outline-danger me-1" name="_method" value="delete">Delete</button>
+    </th:block>
   </div>
 </form>
