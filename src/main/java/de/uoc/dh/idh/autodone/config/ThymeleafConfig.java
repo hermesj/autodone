@@ -1,8 +1,8 @@
 package de.uoc.dh.idh.autodone.config;
 
-import static de.uoc.dh.idh.autodone.utils.WebUtils.href;
 import static java.time.Instant.now;
 import static java.util.Set.of;
+import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest;
 import static org.springframework.web.util.ServletRequestPathUtils.PATH_ATTRIBUTE;
 
 import java.util.Set;
@@ -28,7 +28,7 @@ public class ThymeleafConfig extends AbstractDialect implements IExpressionObjec
 
 	public ThymeleafConfig() {
 		super(ThymeleafConfig.class.getSimpleName());
-		expressionObjectNames = of("path", "pom", "time", "uri");
+		expressionObjectNames = of("instant", "path", "pom", "uri");
 	}
 
 	//
@@ -45,10 +45,10 @@ public class ThymeleafConfig extends AbstractDialect implements IExpressionObjec
 			@Override()
 			public Object buildObject(IExpressionContext context, String expressionObjectName) {
 				return switch (expressionObjectName) {
+				case "instant" -> now();
 				case "path" -> context.getVariable(PATH_ATTRIBUTE).toString();
 				case "pom" -> projectUtils.projectModel;
-				case "time" -> now();
-				case "uri" -> href();
+				case "uri" -> fromCurrentRequest();
 				default -> null;
 				};
 			}
@@ -56,9 +56,9 @@ public class ThymeleafConfig extends AbstractDialect implements IExpressionObjec
 			@Override()
 			public boolean isCacheable(String expressionObjectName) {
 				return switch (expressionObjectName) {
+				case "instant" -> true;
 				case "path" -> true;
 				case "pom" -> true;
-				case "time" -> true;
 				case "uri" -> false;
 				default -> false;
 				};

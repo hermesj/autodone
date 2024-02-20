@@ -19,8 +19,8 @@
         <td class="text-center">
           <i th:if="*{id}" class="bi bi-check-lg"></i>
           <th:block th:unless="*{id}">
-            <i th:if="*{date.isAfter(#time)}" class="bi bi-hourglass-split"></i>
-            <i th:if="*{date.isBefore(#time)}" class="bi bi-x-lg"></i>
+            <i th:if="*{date.isAfter(#instant)}" class="bi bi-hourglass-split"></i>
+            <i th:if="*{date.isBefore(#instant)}" class="bi bi-x-lg"></i>
           </th:block>
         </td>
         <td th:if="${#path} == '/status'">

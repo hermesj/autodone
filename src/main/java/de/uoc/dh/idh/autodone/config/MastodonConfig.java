@@ -15,6 +15,8 @@ public class MastodonConfig {
 
 	public static final String MASTODON_API_STATUS;
 
+	//
+
 	public static final String MASTODON_OAUTH_AUTHORIZE;
 
 	public static final String MASTODON_OAUTH_REVOKE;
@@ -25,11 +27,14 @@ public class MastodonConfig {
 
 	public static final String MASTODON_OAUTH_USERINFO;
 
+	//
+
 	static {
 		MASTODON_API_APPS = getEnvironment().getProperty("mastodon.api.apps", String.class);
 		MASTODON_API_INSTANCE = getEnvironment().getProperty("mastodon.api.instance", String.class);
 		MASTODON_API_MEDIA = getEnvironment().getProperty("mastodon.api.media", String.class);
 		MASTODON_API_STATUS = getEnvironment().getProperty("mastodon.api.status", String.class);
+
 		MASTODON_OAUTH_AUTHORIZE = getEnvironment().getProperty("mastodon.oauth.authorize", String.class);
 		MASTODON_OAUTH_REVOKE = getEnvironment().getProperty("mastodon.oauth.revoke", String.class);
 		MASTODON_OAUTH_SCOPES = getEnvironment().getProperty("mastodon.oauth.scopes", String.class);
