@@ -34,13 +34,13 @@ services:
   autodone:
     <<: *service
     command: mvn -f /src spring-boot:run
-    image: docker.io/maven:3-eclipse-temurin-17-alpine
+    image: maven:3-eclipse-temurin-17-alpine
     ports: [4000:4000]
     volumes: [$PWD:/src]
 
   mastodon:
     <<: *service
-    image: docker.io/bitnami/mastodon:4
+    image: bitnami/mastodon:4
     ports: [3000:3000]
     environment:
       <<: *environment
@@ -48,7 +48,7 @@ services:
 
   # mastodon-streaming:
   #   <<: *service
-  #   image: docker.io/bitnami/mastodon:4
+  #   image: bitnami/mastodon:4
   #   ports: [4000:4000]
   #   environment:
   #     <<: *environment
@@ -56,15 +56,15 @@ services:
 
   # mastodon-sidekiq:
   #   <<: *service
-  #   image: docker.io/bitnami/mastodon:4
+  #   image: bitnami/mastodon:4
   #   environment:
   #     <<: *environment
   #     MASTODON_MODE: sidekiq
 
   postgres:
     <<: *service
-    image: docker.io/postgres:16-alpine
+    image: postgres:16-alpine
 
   redis:
     <<: *service
-    image: docker.io/redis:7-alpine
+    image: redis:7-alpine
