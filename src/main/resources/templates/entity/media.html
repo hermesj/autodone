@@ -8,8 +8,8 @@
 
   <main class="flex-grow-1 container">
     <h1 class="text-truncate">
-      <a th:href="@{/media}"><i class="bi bi-list"></i></a>
-      <th:block th:text="${media.description} ?: _">Attached Media</th:block>
+      <a th:href="@{/media}" class="btn btn-lg btn-outline-secondary align-bottom"><i class="bi bi-list"></i></a>
+      <th:block th:text="${media.description} ?: _">Media Entity</th:block>
     </h1>
 
     <div class="mb-3 accordion" id="accordion">
@@ -21,7 +21,7 @@
         </div>
         <div class="accordion-collapse collapse show" id="fold-1" data-bs-parent="#accordion">
           <div class="accordion-body">
-            <th:block th:insert="~{forms/media}" />
+            <th:block th:insert="~{forms/media}" th:with="action=@{/media}" />
           </div>
         </div>
       </div>

@@ -7,7 +7,7 @@
   <th:block th:insert="~{elements/navbar}" />
 
   <main class="flex-grow-1 container d-flex align-items-center justify-content-center">
-    <form th:action="@{${#path}}" th:method="post" class="m-0">
+    <form th:action="@{/login}" th:method="post" class="m-0">
       <input id="offset" name="offset" type="hidden" value="0">
       <script>document.getElementById('offset').value = -new Date().getTimezoneOffset();</script>
 

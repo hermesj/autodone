@@ -1,6 +1,6 @@
 <head>
-  <title th:if="!${title}" th:text="${#pom.name}"></title>
   <title th:if="${title}" th:text="|${title} // ${#pom.name}|"></title>
+  <title th:unless="${title}" th:text="${#pom.name}"></title>
 
   <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
   <link th:href="@{/webjars/bootstrap-icons/font/bootstrap-icons.min.css}" rel="stylesheet">
@@ -28,6 +28,10 @@
 
     table.table th {
       background-color: rgba(var(--bs-body-color-rgb), .03);
+    }
+
+    textarea.form-control {
+      min-height: 7.25rem !important;
     }
 
     .accordion-footer {

@@ -18,7 +18,7 @@
         </div>
         <div class="accordion-collapse collapse" id="fold-1" data-bs-parent="#accordion">
           <div class="accordion-body">
-            <th:block th:insert="~{forms/status}" />
+            <th:block th:insert="~{forms/status}" th:with="action=@{/status}" />
           </div>
         </div>
       </div>

@@ -8,8 +8,8 @@
 
   <main class="flex-grow-1 container">
     <h1 class="text-truncate">
-      <a th:href="@{/group}"><i class="bi bi-list"></i></a>
-      <th:block th:text="${group.name}" />
+      <a th:href="@{/group}" class="btn btn-lg btn-outline-secondary align-bottom"><i class="bi bi-list"></i></a>
+      <th:block th:text="${group.name} ?: _">Group Entity</th:block>
     </h1>
 
     <div class="mb-3 accordion" id="accordion">
@@ -21,7 +21,7 @@
         </div>
         <div class="accordion-collapse collapse show" id="fold-1" data-bs-parent="#accordion">
           <div class="accordion-body">
-            <th:block th:insert="~{forms/group}" />
+            <th:block th:insert="~{forms/group}" th:with="action=@{/group}" />
           </div>
         </div>
       </div>
@@ -33,14 +33,17 @@
         </div>
         <div class="accordion-collapse collapse" id="fold-2" data-bs-parent="#accordion">
           <div class="accordion-body">
-            <th:block th:insert="~{forms/status}" />
+            <th:block th:insert="~{forms/status}" th:with="action=@{/status}" />
           </div>
         </div>
       </div>
     </div>
 
     <th:block th:if="${page.hasContent()}">
-      <h2><a th:href="@{/status}"><i class="bi bi-list"></i></a> Status List</h2>
+      <h2>
+        <a th:href="@{/status}" class="btn btn-outline-secondary align-bottom"><i class="bi bi-list"></i></a>
+        Status List
+      </h2>
       <th:block th:insert="~{tables/status}" />
       <th:block th:if="${page.totalPages} > 1" th:insert="~{elements/pager}" />
     </th:block>
