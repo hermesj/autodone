@@ -3,27 +3,34 @@
     <thead>
       <tr>
         <th>Status</th>
-        <th>Date</th>
-        <th th:if="${#path} != '/group'">Group</th>
+        <th>Date (UTC)</th>
+        <th class="text-center">Scheduling</th>
         <th class="text-end">Media</th>
         <th class="text-end">Actions</th>
       </tr>
     </thead>
     <tbody>
       <tr th:each="status : ${page}" th:object="${status}">
-        <td>
-          <a th:href="@{/status(uuid=*{uuid})}" th:text="${#strings.abbreviate(status.status, 100)}"></a>
-        </td>
+        <td th:text="*{status}"></td>
         <td th:text="*{date}"></td>
-        <td th:if="${#path} != '/group'">
-          <a th:href="@{/group(uuid=*{group.uuid})}" th:text="*{group.name}"></a>
+        <td class="text-center">
+          <i th:if="*{id}" class="bi bi-check-lg"></i>
+          <th:block th:if="*{group.enabled}" th:unless="*{id}">
+            <i th:if="*{date.isAfter(#instant)}" class="bi bi-hourglass-split"></i>
+            <i th:if="*{date.isBefore(#instant)}" class="bi bi-x-lg"></i>
+          </th:block>
         </td>
         <td th:text="*{media} ? *{media.size()} : 0" class="text-end"></td>
         <td class="text-end text-nowrap">
           <a th:href="@{/status(uuid=*{uuid})}" class="btn btn-sm btn-outline-primary">
             <i class="bi bi-eye-fill"></i>
           </a>
-          <form th:method="delete" class="d-inline-block m-0">
+          <th:block th:if="${#path} == '/status'">
+            <a th:href="@{/group(uuid=*{group.uuid})}" class="btn btn-sm btn-outline-secondary">
+              <i class="bi bi-list"></i>
+            </a>
+          </th:block>
+          <form th:action="@{/status}" th:method="delete" class="d-inline-block m-0">
             <input th:value="*{uuid}" name="uuid" type="hidden">
             <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Are You sure?')">
               <i class="bi bi-trash-fill"></i>

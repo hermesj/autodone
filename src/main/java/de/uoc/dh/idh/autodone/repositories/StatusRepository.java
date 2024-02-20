@@ -28,7 +28,7 @@ public interface StatusRepository extends BaseRepository<StatusEntity> {
 
 	//
 
-	public Iterable<StatusEntity> findAllByDateAfterAndGroupEnabledTrue(
+	public Iterable<StatusEntity> findAllByDateAfterAndGroupEnabledTrueAndIdIsNull(
 
 			Instant date
 

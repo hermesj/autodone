@@ -1,227 +1,139 @@
 package de.uoc.dh.idh.autodone.services;
 
+import static de.uoc.dh.idh.autodone.config.AutodoneConfig.AUTODONE_IMPORT_SKIP;
+import static de.uoc.dh.idh.autodone.config.AutodoneConfig.AUTODONE_IMPORT_SNIP;
+import static de.uoc.dh.idh.autodone.utils.ObjectUtils.mapFields;
+import static java.time.Instant.now;
+import static java.time.LocalDateTime.ofInstant;
+import static java.time.ZoneOffset.UTC;
+import static java.util.Map.of;
+
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.ParseException;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Year;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import de.uoc.dh.idh.autodone.entities.GroupEntity;
 import de.uoc.dh.idh.autodone.entities.MediaEntity;
 import de.uoc.dh.idh.autodone.entities.StatusEntity;
+import de.uoc.dh.idh.autodone.utils.DateTimeUtils;
+import jakarta.transaction.Transactional;
 
 @Service()
+@Transactional()
 public class ImportService {
 
-	// TODO change return value to GroupEntity
-	public String parse(InputStream inputStream) {
+	@Autowired()
+	private DateTimeUtils dateTimeUtils;
 
-		// TODO: Set client ZoneID
-		ZoneId clientZoneId = ZoneId.of("Europe/Paris");
+	public GroupEntity importGroup(InputStream inputStream) throws Exception {
+		var group = new GroupEntity();
+		var index = new AtomicInteger(1);
+		var line = (String) null;
 
-		GroupEntity toReturn = new GroupEntity();
-		List<StatusEntity> posts = new ArrayList<StatusEntity>();
-		try (BufferedReader in = new BufferedReader(new InputStreamReader(inputStream))) {
-			String line;
-			int lineNo = 1;
-			while ((line = in.readLine()) != null) {
+		group.exceptions = new ArrayList<Exception>();
+		group.status = new ArrayList<StatusEntity>();
 
-				StatusEntity actualPost = new StatusEntity();
+		try (var reader = new BufferedReader(new InputStreamReader(inputStream))) {
+			while ((line = reader.readLine()) != null) {
+				var number = index.getAndIncrement();
 
-				String[] columns = line.split("\t"); // Splitting the line by tabs
-				
-				if(columns!=null && columns[0].startsWith("Date")||columns[0].startsWith("Datum")) {
-					lineNo++;
-					continue;
-				}
-
-				if (columns.length > 2) {
-					
-					LocalDate date = parseDate(columns[0]);
-					if (date == null) {
-						actualPost.exceptions.add(new ParseException("Not parseable date (first column) ", lineNo));
-					}
-					LocalTime time = parseTime(columns[1]);
-					if (time == null) {
-						actualPost.exceptions.add(new ParseException("Not parseable time (second column) ", lineNo));
-					}
-
-					if (date != null && time != null) {
-						Instant dateTimeUTC = getUTC(clientZoneId, date, time);
-						if (dateTimeUTC.isBefore(Instant.now())) {
-							dateTimeUTC = getFutureDate(dateTimeUTC);
-						}
-
-						actualPost.date = dateTimeUTC;
-					}
-
-					String content = columns[2];
-					if (content == null || content.isEmpty()) {
-						actualPost.exceptions.add(new ParseException("No content found (third column) ", lineNo));
-					}
-
-					actualPost.status = content;
-				}
-				else {
-					toReturn.exceptions.add(new ParseException("Please enter at least the date, time and content in the first three columns. ", lineNo));
-				}
-				// check picture URL
-				if (columns.length > 3) {
-					String pictureURL = columns[3];
-					if (pictureURL != null && !pictureURL.trim().isEmpty()) {
-						MediaEntity me = getPictureFromURL(pictureURL);
-						if (me == null) {
-							actualPost.exceptions.add(new ParseException(
-									"URL (fourth column) does not point to a picture or picture is not accessible.",
-									lineNo));
-						} else {
-							// check picture descriptions
-							if (columns.length > 4) {
-								me.description = columns[4];
-							}
-							List<MediaEntity> mes = new ArrayList<MediaEntity>();
-							mes.add(me);
-							actualPost.media = mes;
-						}
+				if (!line.isEmpty() && !line.matches(AUTODONE_IMPORT_SKIP)) {
+					try {
+						group.status.add(mapFields(of("group", group), importStatus(line, number)));
+					} catch (Exception exception) {
+						group.exceptions.add(new ParseException(exception.getMessage(), number));
 					}
 				}
-
-				posts.add(actualPost);
-
-				lineNo++;
 			}
-		} catch (IOException e) {
-			toReturn.exceptions.add(e);
-			e.printStackTrace();
-		}
-		toReturn.status = posts;
-		return toReturn.toString();
-	}
-
-	private Instant getFutureDate(Instant dateTimeUTC) {
-		LocalDateTime dateTimeInUtc = LocalDateTime.ofInstant(dateTimeUTC, ZoneId.of("UTC"));
-
-		int currentYear = Year.now(ZoneId.of("UTC")).getValue();
-
-		LocalDateTime adjustedDateTime = dateTimeInUtc.withYear(currentYear);
-
-		if (adjustedDateTime.isBefore(LocalDateTime.now(ZoneId.of("UTC")))) {
-			adjustedDateTime = adjustedDateTime.plusYears(1);
+		} catch (Exception exception) {
+			throw exception;
 		}
 
-		return adjustedDateTime.atZone(ZoneId.of("UTC")).toInstant();
-
+		return group;
 	}
 
-	private static Instant getUTC(ZoneId clientZoneId, LocalDate localDate, LocalTime localTime) {
-		LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
-		ZonedDateTime clientZonedDateTime = ZonedDateTime.of(localDateTime, clientZoneId);
-		Instant nowInUTC = clientZonedDateTime.toInstant();
-		return nowInUTC;
-	}
+	//
 
-	private LocalDate parseDate(String dateString) {
-		String[] dateFormats = { "yyyy-MM-dd", "dd/MM/yyyy", "dd.MM.yyyy", "d.M.yyyy", "d/M/yyyy" };
+	public StatusEntity importStatus(String line, int number) throws Exception {
+		var columns = line.trim().split(AUTODONE_IMPORT_SNIP);
+		var status = new StatusEntity();
 
-		String[] dateFormatsWithoutYear = { "MM-dd", "dd/MM", "dd.MM.", "d.M.", "d/M" , "dd.MM", "d.M"};
-		for (String format : dateFormats) {
-			try {
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
-				return LocalDate.parse(dateString, formatter);
-			} catch (DateTimeParseException e) {
-				// Continue trying other formats
+		status.exceptions = new ArrayList<Exception>();
+		status.media = new ArrayList<MediaEntity>();
+
+		if (columns.length < 3) {
+			throw new ParseException("Please enter at least date, time and content in the first three columns", number);
+		} else {
+			var date = dateTimeUtils.parseDate(columns[0]);
+			var time = dateTimeUtils.parseTime(columns[1]);
+
+			if (date == null) {
+				status.exceptions.add(new ParseException("Date not parseable (1st column)", number));
 			}
-		}
 
-		for (String format : dateFormatsWithoutYear) {
-			try {
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
-				String dateStringWithCurrentYear = dateString + "." + Year.now(ZoneId.of("UTC"));
-				formatter = DateTimeFormatter.ofPattern(format + ".yyyy");
-				return LocalDate.parse(dateStringWithCurrentYear, formatter);
-			} catch (DateTimeParseException e) {
-				// Continue trying other formats
+			if (time == null) {
+				status.exceptions.add(new ParseException("Time not parseable (2nd column)", number));
 			}
-		}
-		return null;
-	}
 
-	private LocalTime parseTime(String timeString) {
-		String[] timeFormats = { "HH:mm:ss", "HH:mm", "H:mm", "H:mm:ss" };
-
-		for (String format : timeFormats) {
-			try {
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
-				return LocalTime.parse(timeString, formatter);
-			} catch (DateTimeParseException e) {
-				// Continue trying other formats
-			}
-		}
-		return null;
-	}
-
-	private MediaEntity getPictureFromURL(String urlString) {
-		MediaEntity toReturn = new MediaEntity();
-		HttpURLConnection connection = null;
-		String contentType = null;
-		byte[] imageData = null;
-
-		try {
-			URL url = new URL(urlString);
-			connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("GET");
-			connection.connect();
-
-			// Check if URL contains picture
-			contentType = connection.getContentType();
-			if (contentType != null && contentType.startsWith("image/")) {
-				// picture to bytearray
-				imageData = readInputStreamAsByteArray(connection.getInputStream());
+			if (columns[2].isEmpty()) {
+				status.exceptions.add(new ParseException("No content found (3rd column)", number));
+			} else if (columns[2].length() > 500) {
+				status.exceptions.add(new ParseException("Content too long (3rd column)", number));
 			} else {
-				// not a picture
-				return null;
+				status.status = columns[2];
 			}
-		} catch (IOException e) {
-			// IOException
-			return null;
-		} finally {
-			if (connection != null) {
-				connection.disconnect();
+
+			if (date != null && time != null) {
+				status.date = dateTimeUtils.parse(date, time);
+
+				while (status.date.isBefore(now())) {
+					status.date = ofInstant(status.date, UTC).plusYears(1).toInstant(UTC);
+				}
+			}
+
+			if (columns.length > 3) {
+				try {
+					var media = importMedia(columns[3]);
+
+					if (media.file.length > 1024000) {
+						status.exceptions.add(new ParseException("Image too big (4th column)", number));
+					} else {
+						status.media.add(mapFields(of("status", status), media));
+					}
+
+					if (columns.length > 4) {
+						if (columns[4].length() > 1500) {
+							status.exceptions.add(new ParseException("Image caption too long (5th column)", number));
+						} else {
+							media.description = columns[4];
+						}
+					}
+				} catch (Exception exception) {
+					status.exceptions.add(new ParseException("Image not usable (4th column)", number));
+				}
 			}
 		}
-		toReturn.contentType = contentType;
-		toReturn.file = imageData;
-		return toReturn;
 
+		return status;
 	}
 
-	private static byte[] readInputStreamAsByteArray(InputStream inputStream) throws IOException {
-		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-		int nRead;
-		byte[] data = new byte[1024];
+	//
 
-		while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
-			buffer.write(data, 0, nRead);
-		}
+	public MediaEntity importMedia(String url) throws Exception {
+		var media = new MediaEntity();
+		var request = new URL(url).openConnection();
 
-		buffer.flush();
-		return buffer.toByteArray();
+		media.contentType = request.getContentType();
+		media.file = request.getInputStream().readAllBytes();
+
+		return media;
 	}
 
 }

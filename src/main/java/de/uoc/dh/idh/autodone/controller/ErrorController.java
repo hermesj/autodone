@@ -30,7 +30,7 @@ public class ErrorController implements org.springframework.boot.web.servlet.err
 
 		model.addAllAttributes(errorAttributes.getErrorAttributes(request, options));
 		response.setStatus((int) model.getAttribute("status"));
-		return "entity/error";
+		return "elements/error";
 	}
 
 }

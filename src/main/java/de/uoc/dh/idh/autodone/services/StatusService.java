@@ -42,7 +42,7 @@ public class StatusService extends BaseService<StatusEntity> {
 	}
 
 	public Iterable<StatusEntity> getAll(Instant date) {
-		return statusRepository.findAllByDateAfterAndGroupEnabledTrue(date);
+		return statusRepository.findAllByDateAfterAndGroupEnabledTrueAndIdIsNull(date);
 	}
 
 	public Page<StatusEntity> getPage(String page, String sort, GroupEntity group) {
@@ -72,7 +72,6 @@ public class StatusService extends BaseService<StatusEntity> {
 				var next = statusRepository.findTopByGroupAndDateAfterOrderByDate(status.group, status.date);
 				save(mapFields(of("inReplyToId", post.id), next));
 			} catch (Exception exception) {
-				exception.printStackTrace();
 			}
 		}
 

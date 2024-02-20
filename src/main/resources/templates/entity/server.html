@@ -15,7 +15,7 @@
           <small th:text="|(v${server.version})|" class="text-body-tertiary"></small>
         </p>
         <p th:text="${server.description}" class="card-text"></p>
-        <th:block th:if="${!#lists.isEmpty(server.rules)}">
+        <th:block th:unless="${#lists.isEmpty(server.rules)}">
           <p class="card-text"><strong>Server Rules</strong></p>
           <ul class="card-text">
             <li th:each="rule : ${server.rules}" th:text="${rule.text}"></li>

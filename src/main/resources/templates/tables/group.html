@@ -6,15 +6,13 @@
         <th>Description</th>
         <th class="text-center">Enabled</th>
         <th class="text-center">Threaded</th>
-        <th class="text-end">Size</th>
+        <th class="text-end">Status</th>
         <th class="text-end">Actions</th>
       </tr>
     </thead>
     <tbody>
       <tr th:each="group : ${page}" th:object="${group}">
-        <td>
-          <a th:href="@{/group(uuid=*{uuid})}" th:text="${#strings.abbreviate(group.name, 50)}"></a>
-        </td>
+        <td th:text="*{#strings.abbreviate(name, 50)}"></td>
         <td th:text="*{description}"></td>
         <td class="text-center">
           <div class="d-inline-block form-check form-switch m-0">

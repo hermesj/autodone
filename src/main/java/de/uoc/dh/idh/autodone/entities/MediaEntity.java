@@ -37,7 +37,7 @@ public class MediaEntity {
 	@Column(length = 1500)
 	public String description;
 
-	@Column(length = 512000)
+	@Column(length = 1024000)
 	public byte[] file;
 
 	@Column()

@@ -18,7 +18,7 @@
         </div>
         <div class="accordion-collapse collapse" id="fold-1" data-bs-parent="#accordion">
           <div class="accordion-body">
-            <th:block th:insert="~{forms/group}" />
+            <th:block th:insert="~{forms/group}" th:with="action=@{/group}" />
           </div>
         </div>
       </div>
@@ -30,7 +30,7 @@
         </div>
         <div class="accordion-collapse collapse" id="fold-2" data-bs-parent="#accordion">
           <div class="accordion-body">
-            <th:block th:insert="~{forms/import}" />
+            <th:block th:insert="~{forms/import}" th:with="action=@{/import}" />
           </div>
         </div>
       </div>

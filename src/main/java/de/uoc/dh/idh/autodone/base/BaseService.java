@@ -72,23 +72,26 @@ public abstract class BaseService<T> {
 		int length = Math.min(offset + request.getPageSize(), entities.size());
 
 		if (request.getSort().isSorted()) {
-			entities.sort((one, two) -> {
-				var wrapperOne = forBeanPropertyAccess(one);
-				var wrapperTwo = forBeanPropertyAccess(two);
+			try {
+				entities.sort((one, two) -> {
+					var wrapperOne = forBeanPropertyAccess(one);
+					var wrapperTwo = forBeanPropertyAccess(two);
 
-				for (var order : request.getSort()) {
-					var direction = order.isAscending() ? naturalOrder() : reverseOrder();
-					var valueOne = wrapperOne.getPropertyValue(order.getProperty());
-					var valueTwo = wrapperTwo.getPropertyValue(order.getProperty());
-					var result = compare(valueOne, valueTwo, (Comparator) direction);
+					for (var order : request.getSort()) {
+						var direction = order.isAscending() ? naturalOrder() : reverseOrder();
+						var valueOne = wrapperOne.getPropertyValue(order.getProperty());
+						var valueTwo = wrapperTwo.getPropertyValue(order.getProperty());
+						var result = compare(valueOne, valueTwo, (Comparator) direction);
 
-					if (result != 0) {
-						return result;
+						if (result != 0) {
+							return result;
+						}
 					}
-				}
 
-				return 0;
-			});
+					return 0;
+				});
+			} catch (Exception exception) {
+			}
 		}
 
 		if (offset > entities.size()) {
