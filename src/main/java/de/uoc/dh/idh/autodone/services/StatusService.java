@@ -72,7 +72,6 @@ public class StatusService extends BaseService<StatusEntity> {
 				var next = statusRepository.findTopByGroupAndDateAfterOrderByDate(status.group, status.date);
 				save(mapFields(of("inReplyToId", post.id), next));
 			} catch (Exception exception) {
-				exception.printStackTrace();
 			}
 		}
 
