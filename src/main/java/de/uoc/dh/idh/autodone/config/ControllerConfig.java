@@ -53,7 +53,7 @@ public class ControllerConfig {
 		//
 
 		public Handler(String handle) throws Exception {
-			this.handle = "pages/" + handle;
+			this.handle = "pages" + handle;
 			this.method = getClass().getMethod("handle");
 		}
 
