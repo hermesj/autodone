@@ -56,7 +56,7 @@ public class ServerEntity {
 	public List<Map<String, String>> rules;
 
 	@Transient()
-	public Map<String, String> thumbnail;
+	public Map<String, Object> thumbnail;
 
 	@Transient()
 	public String title;
