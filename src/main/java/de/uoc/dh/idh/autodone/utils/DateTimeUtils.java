@@ -4,14 +4,10 @@ import static de.uoc.dh.idh.autodone.config.AutodoneConfig.AUTODONE_IMPORT_DATE;
 import static de.uoc.dh.idh.autodone.config.AutodoneConfig.AUTODONE_IMPORT_DAYS;
 import static de.uoc.dh.idh.autodone.config.AutodoneConfig.AUTODONE_IMPORT_TIME;
 import static java.time.LocalDateTime.ofInstant;
-import static java.time.LocalTime.MAX;
-import static java.time.LocalTime.MIN;
-import static java.time.LocalTime.ofSecondOfDay;
 import static java.time.Year.now;
 import static java.time.ZoneOffset.UTC;
 import static java.time.ZonedDateTime.of;
 import static java.time.format.DateTimeFormatter.ofPattern;
-import static java.util.concurrent.ThreadLocalRandom.current;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -64,10 +60,6 @@ public class DateTimeUtils {
 	//
 
 	public LocalTime parseTime(String time) {
-		if (time.isEmpty()) {
-			return ofSecondOfDay(current().nextInt(MIN.toSecondOfDay(), MAX.toSecondOfDay()));
-		}
-
 		for (var format : AUTODONE_IMPORT_TIME) {
 			try {
 				return LocalTime.parse(time, ofPattern(format));

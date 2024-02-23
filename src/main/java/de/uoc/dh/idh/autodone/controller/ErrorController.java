@@ -19,7 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class ErrorController implements org.springframework.boot.web.servlet.error.ErrorController {
 
 	@Autowired()
-	ErrorAttributes errorAttributes;
+	private ErrorAttributes errorAttributes;
 
 	//
 
