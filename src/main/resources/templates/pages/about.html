@@ -6,7 +6,31 @@
 <body class="h-100 d-flex flex-column">
   <th:block th:insert="~{elements/navbar}" />
 
-  <main class="flex-grow-1 container"></main>
+  <main class="flex-grow-1 container">
+    <h1>About autodone</h1>
+
+    <p class="lead">
+      <strong>autodone</strong> is a service for the automated, time-controlled
+      publication of status updates on any Mastodon instance. The codebase is
+      <a href="https://github.com/dh-cologne/autodone">developed under a free
+      license</a> by the <a href="https://dh.uni-koeln.de">Department of Digital
+      Humanities</a> at the <a href="https://www.uni-koeln.de">University of
+      Cologne</a> and is open to all interested users.
+    </p>
+
+    <p class="lead">
+      Special features of the service include the ability to upload content in
+      tabular format (tsv files) and the ability to publish posts as a thread.
+      In addition to these basic functionalities, more features will be
+      developed in the future.
+    </p>
+
+    <p class="lead">
+      <strong>autodone</strong> replaces <strong>autoChirp</strong>, which
+      offered the same functionality for Twitter before the Twitter API and
+      Twitter itself was massively restricted regarding free and ethical usage.
+    </p>
+  </main>
 
   <th:block th:insert="~{elements/navend}" />
 </body>
