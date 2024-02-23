@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import de.uoc.dh.idh.autodone.base.BaseService;
 import de.uoc.dh.idh.autodone.entities.GroupEntity;
 import de.uoc.dh.idh.autodone.repositories.GroupRepository;
-import jakarta.transaction.Transactional;;
+import jakarta.transaction.Transactional;
 
 @Service()
 @Transactional()

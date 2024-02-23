@@ -26,6 +26,8 @@ public class SecurityConfig {
 
 	public static final String SCHEME;
 
+	//
+
 	static {
 		var rootPattern = defaultInstance.parse(DEFAULT_FILTER_PROCESSES_URI);
 		var pathPattern = defaultInstance.parse("{" + DEFAULT_REGISTRATION_ID_URI_VARIABLE_NAME + "}");
@@ -47,13 +49,10 @@ public class SecurityConfig {
 	@Bean()
 	public SecurityFilterChain securityFilterChain(ClientRepository repository, HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests((authorizeHttpRequests) -> {
-			for (var path : paths) {
-				authorizeHttpRequests.requestMatchers(path).permitAll();
-			}
-
 			authorizeHttpRequests.requestMatchers("/images/**").permitAll();
 			authorizeHttpRequests.requestMatchers("/webjars/**").permitAll();
 			authorizeHttpRequests.requestMatchers(DEFAULT_LOGIN_PAGE_URL).permitAll();
+			paths.forEach((path) -> authorizeHttpRequests.requestMatchers(path).permitAll());
 			authorizeHttpRequests.anyRequest().authenticated();
 		});
 

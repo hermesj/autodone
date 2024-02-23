@@ -30,8 +30,6 @@ public class AutodoneApplication extends SpringApplication {
 		new AutodoneApplication().run(args);
 	}
 
-	//
-
 	public AutodoneApplication() {
 		super(AutodoneApplication.class);
 	}

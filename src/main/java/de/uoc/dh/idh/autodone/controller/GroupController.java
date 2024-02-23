@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import de.uoc.dh.idh.autodone.entities.GroupEntity;
 import de.uoc.dh.idh.autodone.entities.StatusEntity;
 import de.uoc.dh.idh.autodone.services.GroupService;
-import de.uoc.dh.idh.autodone.services.StatusService;;;
+import de.uoc.dh.idh.autodone.services.StatusService;
 
 @Controller()
 @RequestMapping("/group")

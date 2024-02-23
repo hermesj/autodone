@@ -16,11 +16,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 @Configuration()
 public class ControllerConfig {
 
-	public static final List<String> paths;
-
-	static {
-		paths = new ArrayList<>();
-	}
+	public static final List<String> paths = new ArrayList<>();
 
 	//
 
