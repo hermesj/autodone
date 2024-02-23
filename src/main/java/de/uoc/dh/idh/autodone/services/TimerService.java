@@ -28,17 +28,11 @@ import jakarta.transaction.Transactional;
 @Transactional()
 public class TimerService {
 
-	private final static Map<UUID, ScheduledFuture<MediaEntity>> scheduledMedia;
+	private final static Map<UUID, ScheduledFuture<MediaEntity>> scheduledMedia = new HashMap<>();
 
-	private final static Map<UUID, ScheduledFuture<StatusEntity>> scheduledStatus;
+	private final static Map<UUID, ScheduledFuture<StatusEntity>> scheduledStatus = new HashMap<>();
 
-	private final static ScheduledExecutorService scheduler;
-
-	static {
-		scheduledMedia = new HashMap<>();
-		scheduledStatus = new HashMap<>();
-		scheduler = newScheduledThreadPool(AUTODONE_THREADPOOL);
-	}
+	private final static ScheduledExecutorService scheduler = newScheduledThreadPool(AUTODONE_THREADPOOL);
 
 	//
 

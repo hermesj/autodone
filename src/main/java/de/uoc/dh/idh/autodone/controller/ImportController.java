@@ -46,19 +46,25 @@ public class ImportController {
 	public String get(Model model, @RequestParam() Map<String, String> params) {
 		var group = (GroupEntity) httpSession.getAttribute("import");
 		var page = statusService.getPage(params.get("page"), params.get("sort"), group);
-		var exceptions = new LinkedMultiValueMap<Integer, String>();
+		var alerts = new LinkedMultiValueMap<Integer, String>();
+		var errors = new LinkedMultiValueMap<Integer, String>();
 
-		for (var exception : group.exceptions) {
-			exceptions.add(((ParseException) exception).getErrorOffset(), exception.getMessage());
-		}
+		group.status.stream().flatMap((s) -> s.exceptions.stream()).sorted((a, b) -> {
+			return ((ParseException) a).getErrorOffset() > ((ParseException) b).getErrorOffset() ? 1 : -1;
+		}).forEach((exception) -> {
+			alerts.add(((ParseException) exception).getErrorOffset(), exception.getMessage());
+		});
 
-		for (var exception : group.status.stream().flatMap((s) -> s.exceptions.stream()).toList()) {
-			exceptions.add(((ParseException) exception).getErrorOffset(), exception.getMessage());
-		}
+		group.exceptions.stream().sorted((a, b) -> {
+			return ((ParseException) a).getErrorOffset() > ((ParseException) b).getErrorOffset() ? 1 : -1;
+		}).forEach((exception) -> {
+			errors.add(((ParseException) exception).getErrorOffset(), exception.getMessage());
+		});
 
+		model.addAttribute("alerts", alerts);
+		model.addAttribute("errors", errors);
 		model.addAttribute("group", group);
 		model.addAttribute("page", page);
-		model.addAttribute("exceptions", exceptions);
 		return "entity/import";
 	}
 
@@ -74,6 +80,7 @@ public class ImportController {
 			return "redirect:" + href();
 		} else {
 			var group = (GroupEntity) httpSession.getAttribute("import");
+			httpSession.removeAttribute("import");
 
 			var save = groupService.save(mapFields(form, group, FORCE));
 			return "redirect:/group?uuid=" + save.uuid;

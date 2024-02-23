@@ -1,14 +1,23 @@
 package de.uoc.dh.idh.autodone.services;
 
+import static de.uoc.dh.idh.autodone.config.AutodoneConfig.AUTODONE_IMG_FORMAT;
+import static de.uoc.dh.idh.autodone.config.AutodoneConfig.AUTODONE_IMG_SIZE_X;
+import static de.uoc.dh.idh.autodone.config.AutodoneConfig.AUTODONE_IMG_SIZE_Y;
 import static de.uoc.dh.idh.autodone.config.AutodoneConfig.AUTODONE_IMPORT_SKIP;
 import static de.uoc.dh.idh.autodone.config.AutodoneConfig.AUTODONE_IMPORT_SNIP;
 import static de.uoc.dh.idh.autodone.utils.ObjectUtils.mapFields;
+import static java.awt.Image.SCALE_FAST;
+import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static java.time.Instant.now;
 import static java.time.LocalDateTime.ofInstant;
 import static java.time.ZoneOffset.UTC;
 import static java.util.Map.of;
+import static javax.imageio.ImageIO.read;
+import static javax.imageio.ImageIO.write;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -31,6 +40,8 @@ public class ImportService {
 
 	@Autowired()
 	private DateTimeUtils dateTimeUtils;
+
+	//
 
 	public GroupEntity importGroup(InputStream inputStream) throws Exception {
 		var group = new GroupEntity();
@@ -69,7 +80,7 @@ public class ImportService {
 		status.media = new ArrayList<MediaEntity>();
 
 		if (columns.length < 3) {
-			throw new ParseException("Please enter at least date, time and content in the first three columns", number);
+			throw new Exception("Please enter at least date, time and content in the first three columns");
 		} else {
 			var date = dateTimeUtils.parseDate(columns[0]);
 			var time = dateTimeUtils.parseTime(columns[1]);
@@ -82,37 +93,39 @@ public class ImportService {
 				status.exceptions.add(new ParseException("Time not parseable (2nd column)", number));
 			}
 
-			if (columns[2].isEmpty()) {
-				status.exceptions.add(new ParseException("No content found (3rd column)", number));
-			} else if (columns[2].length() > 500) {
-				status.exceptions.add(new ParseException("Content too long (3rd column)", number));
-			} else {
-				status.status = columns[2];
-			}
-
 			if (date != null && time != null) {
 				status.date = dateTimeUtils.parse(date, time);
 
 				while (status.date.isBefore(now())) {
 					status.date = ofInstant(status.date, UTC).plusYears(1).toInstant(UTC);
 				}
+			} else {
+				throw new Exception("Please enter a correct date and time in the first two columns");
+			}
+
+			if (columns[2].isEmpty()) {
+				status.exceptions.add(new ParseException("No content found (3rd column)", number));
+			} else if (columns[2].length() > 500) {
+				status.exceptions.add(new ParseException("Content trimmed (3rd column)", number));
+				status.status = columns[2].substring(0, 495) + "[...]";
+			} else {
+				status.status = columns[2];
 			}
 
 			if (columns.length > 3) {
 				try {
-					var media = importMedia(columns[3]);
+					status.media.add(mapFields(of("status", status), importMedia(columns[3])));
 
-					if (media.file.length > 1024000) {
-						status.exceptions.add(new ParseException("Image too big (4th column)", number));
-					} else {
-						status.media.add(mapFields(of("status", status), media));
+					if (status.media.get(0).description != null) {
+						status.exceptions.add(new ParseException("Image scaled down (4th column)", number));
+						status.media.get(0).description = null;
 					}
 
 					if (columns.length > 4) {
 						if (columns[4].length() > 1500) {
 							status.exceptions.add(new ParseException("Image caption too long (5th column)", number));
 						} else {
-							media.description = columns[4];
+							status.media.get(0).description = columns[4];
 						}
 					}
 				} catch (Exception exception) {
@@ -131,7 +144,34 @@ public class ImportService {
 		var request = new URL(url).openConnection();
 
 		media.contentType = request.getContentType();
-		media.file = request.getInputStream().readAllBytes();
+
+		if (request.getContentLength() < 1024000) {
+			media.file = request.getInputStream().readAllBytes();
+		} else {
+			var buffer = new ByteArrayOutputStream();
+			var source = read(request.getInputStream());
+
+			var scaleX = source.getWidth();
+			var scaleY = source.getHeight();
+
+			if (scaleX > AUTODONE_IMG_SIZE_X) {
+				scaleX = AUTODONE_IMG_SIZE_X;
+				scaleY = (scaleX * source.getHeight()) / source.getWidth();
+			}
+
+			if (scaleY > AUTODONE_IMG_SIZE_Y) {
+				scaleY = AUTODONE_IMG_SIZE_Y;
+				scaleX = (scaleY * source.getWidth()) / source.getHeight();
+			}
+
+			var target = new BufferedImage(scaleX, scaleY, TYPE_INT_ARGB);
+			var scaled = source.getScaledInstance(scaleX, scaleY, SCALE_FAST);
+			target.getGraphics().drawImage(scaled, 0, 0, null, null);
+			write(target, AUTODONE_IMG_FORMAT, buffer);
+
+			media.description = "Scaled down from original";
+			media.file = buffer.toByteArray();
+		}
 
 		return media;
 	}

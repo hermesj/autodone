@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration()
-@SuppressWarnings("unchecked")
+@SuppressWarnings("all")
 public class AutodoneConfig {
 
 	public static final List<String> AUTODONE_IMPORT_DATE;
@@ -22,7 +22,13 @@ public class AutodoneConfig {
 
 	public static final String AUTODONE_IMPORT_SNIP;
 
+	public static final String AUTODONE_IMG_FORMAT;
+
 	//
+
+	public static final int AUTODONE_IMG_SIZE_X;
+
+	public static final int AUTODONE_IMG_SIZE_Y;
 
 	public static final int AUTODONE_PAGINATION;
 
@@ -39,6 +45,10 @@ public class AutodoneConfig {
 
 		AUTODONE_IMPORT_SKIP = getEnvironment().getProperty("autodone.import.skip", String.class);
 		AUTODONE_IMPORT_SNIP = getEnvironment().getProperty("autodone.import.snip", String.class);
+		AUTODONE_IMG_FORMAT = getEnvironment().getProperty("autodone.img.format", String.class);
+
+		AUTODONE_IMG_SIZE_X = getEnvironment().getProperty("autodone.img.size.x", int.class);
+		AUTODONE_IMG_SIZE_Y = getEnvironment().getProperty("autodone.img.size.y", int.class);
 
 		AUTODONE_PAGINATION = getEnvironment().getProperty("autodone.pagination", int.class);
 		AUTODONE_SCHEDULING = getEnvironment().getProperty("autodone.scheduling", int.class);
