@@ -26,6 +26,16 @@ public interface MediaRepository extends BaseRepository<MediaEntity> {
 
 	//
 
+	Iterable<MediaEntity> findAllByStatusGroupTokenUsernameAndStatusGroupTokenServerDomain(
+
+			String username,
+
+			String domain
+
+	);
+
+	//
+
 	Page<MediaEntity> findAllByStatusGroupTokenUsernameAndStatusGroupTokenServerDomain(
 
 			Pageable pageable,

@@ -26,6 +26,16 @@ public interface GroupRepository extends BaseRepository<GroupEntity> {
 
 	//
 
+	public Iterable<GroupEntity> findAllByTokenUsernameAndTokenServerDomain(
+
+			String username,
+
+			String domain
+
+	);
+
+	//
+
 	public Page<GroupEntity> findAllByTokenUsernameAndTokenServerDomain(
 
 			Pageable pageable,

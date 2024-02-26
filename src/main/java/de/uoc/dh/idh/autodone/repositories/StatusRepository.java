@@ -36,6 +36,16 @@ public interface StatusRepository extends BaseRepository<StatusEntity> {
 
 	//
 
+	public Iterable<StatusEntity> findAllByGroupTokenUsernameAndGroupTokenServerDomain(
+
+			String username,
+
+			String domain
+
+	);
+
+	//
+
 	public Page<StatusEntity> findAllByGroupTokenUsernameAndGroupTokenServerDomain(
 
 			Pageable pageable,
