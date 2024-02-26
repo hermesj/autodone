@@ -28,6 +28,8 @@ public abstract class BaseService<T> {
 
 	public abstract T getOne(UUID uuid, String username, String domain);
 
+	public abstract Iterable<T> getOwn(String username, String domain);
+
 	public abstract Page<T> getPage(Pageable request, String username, String domain);
 
 	//
@@ -52,6 +54,16 @@ public abstract class BaseService<T> {
 
 	public T getOne(String uuid, OAuth2AuthenticationToken oauth) {
 		return getOne(fromString(uuid), oauth.getName(), oauth.getAuthorizedClientRegistrationId());
+	}
+
+	//
+
+	public Iterable<T> getOwn() {
+		return getOwn((OAuth2AuthenticationToken) getContext().getAuthentication());
+	}
+
+	public Iterable<T> getOwn(OAuth2AuthenticationToken oauth) {
+		return getOwn(oauth.getName(), oauth.getAuthorizedClientRegistrationId());
 	}
 
 	//

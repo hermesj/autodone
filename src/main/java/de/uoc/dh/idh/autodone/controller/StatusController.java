@@ -58,7 +58,7 @@ public class StatusController {
 			return "entity/status";
 		} else {
 			var status = new StatusEntity();
-			var groups = groupService.getAll();
+			var groups = groupService.getOwn();
 			var page = statusService.getPage(params.get("page"), params.get("sort"));
 
 			model.addAttribute("status", status);

@@ -30,12 +30,6 @@ public class GroupService extends BaseService<GroupEntity> {
 
 	//
 
-	public Iterable<GroupEntity> getAll() {
-		return groupRepository.findAll();
-	}
-
-	//
-
 	public GroupEntity save(GroupEntity group) {
 		group.token = tokenService.getOne();
 		group = groupRepository.save(group);
@@ -60,6 +54,12 @@ public class GroupService extends BaseService<GroupEntity> {
 	public GroupEntity getOne(UUID uuid, String username, String domain) {
 		return groupRepository //
 				.findOneByUuidAndTokenUsernameAndTokenServerDomain(uuid, username, domain);
+	}
+
+	@Override
+	public Iterable<GroupEntity> getOwn(String username, String domain) {
+		return groupRepository //
+				.findAllByTokenUsernameAndTokenServerDomain(username, domain);
 	}
 
 	@Override()
