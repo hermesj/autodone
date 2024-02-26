@@ -50,7 +50,7 @@ public class MediaController {
 			return "entity/media";
 		} else {
 			var media = new MediaEntity();
-			var status = statusService.getAll();
+			var status = statusService.getOwn();
 			var page = mediaService.getPage(params.get("page"), params.get("sort"));
 
 			model.addAttribute("media", media);

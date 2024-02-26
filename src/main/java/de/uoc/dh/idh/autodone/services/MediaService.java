@@ -95,6 +95,12 @@ public class MediaService extends BaseService<MediaEntity> {
 				.findOneByUuidAndStatusGroupTokenUsernameAndStatusGroupTokenServerDomain(uuid, username, domain);
 	}
 
+	@Override
+	public Iterable<MediaEntity> getOwn(String username, String domain) {
+		return mediaRepository //
+				.findAllByStatusGroupTokenUsernameAndStatusGroupTokenServerDomain(username, domain);
+	}
+
 	@Override()
 	public Page<MediaEntity> getPage(Pageable request, String username, String domain) {
 		return mediaRepository //

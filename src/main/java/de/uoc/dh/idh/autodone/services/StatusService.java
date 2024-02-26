@@ -37,10 +37,6 @@ public class StatusService extends BaseService<StatusEntity> {
 
 	//
 
-	public Iterable<StatusEntity> getAll() {
-		return statusRepository.findAll();
-	}
-
 	public Iterable<StatusEntity> getAll(Instant date) {
 		return statusRepository.findAllByDateAfterAndGroupEnabledTrueAndIdIsNull(date);
 	}
@@ -103,6 +99,12 @@ public class StatusService extends BaseService<StatusEntity> {
 	public StatusEntity getOne(UUID uuid, String username, String domain) {
 		return statusRepository //
 				.findOneByUuidAndGroupTokenUsernameAndGroupTokenServerDomain(uuid, username, domain);
+	}
+
+	@Override
+	public Iterable<StatusEntity> getOwn(String username, String domain) {
+		return statusRepository //
+				.findAllByGroupTokenUsernameAndGroupTokenServerDomain(username, domain);
 	}
 
 	@Override()
