@@ -29,9 +29,9 @@
           <a th:href="@{/group(uuid=*{uuid})}" class="btn btn-sm btn-outline-primary">
             <i class="bi bi-eye-fill"></i>
           </a>
-          <form th:action="@{/group}" th:method="delete" class="d-inline-block m-0">
+          <form th:action="@{/group}" th:method="post" class="d-inline-block m-0">
             <input th:value="*{uuid}" name="uuid" type="hidden">
-            <button data-confirm class="btn btn-sm btn-outline-danger">
+            <button class="btn btn-sm btn-outline-danger" name="_method" value="delete">
               <i class="bi bi-trash-fill"></i>
             </button>
           </form>
