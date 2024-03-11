@@ -102,7 +102,7 @@ public class ObjectUtils {
 
 	private ObjectUtils(ConversionService conversionService) {
 		ObjectUtils.conversionService = conversionService;
-		ObjectUtils.stringTrimmer = new StringTrimmerEditor(true);
+		ObjectUtils.stringTrimmer = new StringTrimmerEditor("\r", true);
 	}
 
 }
