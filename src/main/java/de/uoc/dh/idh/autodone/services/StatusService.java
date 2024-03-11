@@ -3,10 +3,8 @@ package de.uoc.dh.idh.autodone.services;
 import static de.uoc.dh.idh.autodone.config.MastodonConfig.MASTODON_API_STATUS;
 import static de.uoc.dh.idh.autodone.utils.ObjectUtils.FORCE;
 import static de.uoc.dh.idh.autodone.utils.ObjectUtils.copyFields;
-import static de.uoc.dh.idh.autodone.utils.ObjectUtils.mapFields;
 import static de.uoc.dh.idh.autodone.utils.WebUtils.remoteHref;
 import static de.uoc.dh.idh.autodone.utils.WebUtils.request;
-import static java.util.Map.of;
 import static org.springframework.data.domain.Sort.by;
 
 import java.time.Instant;
@@ -53,23 +51,23 @@ public class StatusService extends BaseService<StatusEntity> {
 
 	public StatusEntity publish(StatusEntity status) {
 		var data = new HashMap<String, Object>();
-		data.put("in_reply_to_id", status.inReplyToId);
 		data.put("status", status.status);
 
 		if (status.media != null) {
 			data.put("media_ids", status.media.stream().map((media) -> media.id).toList());
 		}
 
-		var href = remoteHref(status.group.token.server.domain, MASTODON_API_STATUS);
-		var post = request(StatusEntity.class).auth(status.group.token).post(href, data);
-
 		if (status.group.threaded) {
-			try {
-				var next = statusRepository.findTopByGroupAndDateAfterOrderByDate(status.group, status.date);
-				save(mapFields(of("inReplyToId", post.id), next));
-			} catch (Exception exception) {
+			var prev = statusRepository //
+					.findTopByGroupAndDateBeforeAndIdIsNotNullOrderByDateDesc(status.group, status.date);
+
+			if (prev != null) {
+				data.put("in_reply_to_id", prev.id);
 			}
 		}
+
+		var href = remoteHref(status.group.token.server.domain, MASTODON_API_STATUS);
+		var post = request(StatusEntity.class).auth(status.group.token).post(href, data);
 
 		return save(copyFields(post, status, FORCE));
 	}
