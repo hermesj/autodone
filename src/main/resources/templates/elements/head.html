@@ -64,8 +64,8 @@
     })();
 
     document.addEventListener("DOMContentLoaded", () => {
-      document.querySelectorAll('.btn').forEach((node) => {
-        node.onclick = () => setTimeout(() => node.disabled = true);
+      document.querySelectorAll('form .btn').forEach((node) => {
+        node.onclick = () => setTimeout(() => node.disabled = node.form.checkValidity());
       });
 
       document.querySelectorAll('[data-confirm]').forEach((node) => {
