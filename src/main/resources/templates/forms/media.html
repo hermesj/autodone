@@ -39,7 +39,7 @@
         <div th:classappend="'col-md-' + (*{uuid} ? 12 : 6)" class="mb-3">
           <label class="form-label fw-bold" for="description">Media Description</label>
           <div class="form-floating">
-            <input placeholder th:field="*{description}" class="form-control">
+            <textarea placeholder th:field="*{description}" class="form-control" maxlength="1500"></textarea>
             <label class="form-label">Description for the attached Media</label>
           </div>
         </div>
