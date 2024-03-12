@@ -70,7 +70,7 @@ public interface StatusRepository extends BaseRepository<StatusEntity> {
 
 	//
 
-	public StatusEntity findTopByGroupAndDateAfterOrderByDate(
+	public StatusEntity findTopByGroupAndDateBeforeAndIdIsNotNullOrderByDateDesc(
 
 			GroupEntity group,
 
