@@ -39,7 +39,7 @@
         <div th:classappend="'col-md-' + (*{uuid} ? 12 : 6)" class="mb-3">
           <label class="form-label fw-bold" for="description">Media Description</label>
           <div class="form-floating">
-            <input placeholder th:field="*{description}" class="form-control">
+            <textarea placeholder th:field="*{description}" class="form-control" maxlength="1500"></textarea>
             <label class="form-label">Description for the attached Media</label>
           </div>
         </div>
@@ -50,7 +50,7 @@
     <button th:text="*{uuid} ? 'Update' : 'Create'" class="btn btn-outline-primary"></button>
     <th:block th:if="*{uuid}">
       <button class="btn btn-outline-secondary me-1" type="reset">Reset</button>
-      <button data-confirm class="btn btn-outline-danger me-1" name="_method" value="delete">Delete</button>
+      <button class="btn btn-outline-danger me-1" name="_method" value="delete">Delete</button>
     </th:block>
   </div>
 </form>

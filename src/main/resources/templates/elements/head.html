@@ -64,12 +64,12 @@
     })();
 
     document.addEventListener("DOMContentLoaded", () => {
-      document.querySelectorAll('.btn').forEach((node) => {
-        node.onclick = () => setTimeout(() => node.disabled = true);
+      document.querySelectorAll('form').forEach((form) => form.onsubmit = () => {
+        setTimeout(() => form.querySelectorAll('.btn').forEach((button) => button.disabled = true));
       });
 
-      document.querySelectorAll('[data-confirm]').forEach((node) => {
-        node.onclick = () => confirm('Are You sure?');
+      document.querySelectorAll('.btn[name=_method][value=delete]').forEach((button) => {
+        button.onclick = () => confirm('Permanently delete this entry?');
       });
     });
   </script>
