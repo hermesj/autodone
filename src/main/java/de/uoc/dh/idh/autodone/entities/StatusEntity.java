@@ -45,9 +45,6 @@ public class StatusEntity {
 	@Column()
 	public String id;
 
-	@Column()
-	public String inReplyToId;
-
 	@Column(nullable = false, length = 500)
 	public String status;
 
