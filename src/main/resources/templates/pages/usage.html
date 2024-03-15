@@ -8,10 +8,42 @@
 
   <main class="flex-grow-1 container">
     <h1>Usage Instructions</h1>
+    
+    <nav>
+        <ul>
+            <li><a href="#authorize-autodone-to-post-on-your-mastodon-profile">Authorize autodone to post on your Mastodon profile</a></li>
+            <li><a href="#import-posts-from-a-table">Import posts from a table</a></li>
+        </ul>
+    </nav>
 
-    <p class="lead">
-      Usage instructions will follow soon.
-    </p>
+    <h2 id="authorize-autodone-to-post-on-your-mastodon-profile">Authorize autodone to post on your Mastodon profile</h2>
+<p>Firstly, make sure that you are logged into Mastodon with your browser using the account with which you also want to use autodone.</p>
+<p>If you open the page <a href="http://autodone.idh.uni-koeln.de">autodone.idh.uni-koeln.de</a>, you will get the following view:</p>
+<p><img src="/images/c94bccedc7a46b987eaf71d8b565423b.png" alt="c94bccedc7a46b987eaf71d8b565423b.png"></p>
+<p>If you now click <code>Get started</code>, you will be asked to enter your Mastodon server in the next window. It may already be in the drop-down menu, otherwise you will have to enter it manually:</p>
+<p><img src="/images/612d7f266884831cef5cba152277b3b6.png" alt="612d7f266884831cef5cba152277b3b6.png"></p>
+<p>Once you have pressed <code>Proceed</code>, the server&#39;s rules will be displayed. Click <code>Authorize</code> to confirm these. Within the next window, with another <code>Autorize</code> you confirm that autodone is allowed to post in your name. Of course, autodone will only post what you tell the service to post! </p>
+<p>Once you have completed authorisation, you will be taken to your Group Dashboard:</p>
+<p><img src="/images/80f9abc74831657b9c07bccf7520cd72.png" alt="80f9abc74831657b9c07bccf7520cd72.png"></p>
+<h2 id="import-posts-from-a-table">Import posts from a table</h2>
+<p>Groups are the central working unit in autodone. Several posts are grouped together so that they can be edited together. For example, they can be released for publication or can be arranged in a thread. 
+The most important functionality of autodone is that it is possible to collect posts with their intended publication date in a table and upload them collectively to autodone.</p>
+<p>You can use any spreadsheet app to create the tables (LibreOffice, Excel, Google Spreadsheets). It is important that the tables are exported in <code>tsv</code> format, as only this format is accepted by autodone. 
+The table in the following screenshot was created in Google Drive. You can copy it <a href="https://docs.google.com/spreadsheets/d/13qtYKiQrPq_frpzFt_XYgzDKVLGOvDevZUr3J536CSs/edit#gid=0">here</a>. The format is kept very simple: Each row represents a post that is to be published on Mastodon. If the first row starts with &quot;Date&quot;, it will be ignored. There are exactly five columns, the first three of which must be filled in. In the first two columns (Date, Time) you specify when the post should be published. In the third column, enter the text to be published. If you also want to attach an image to the post, this must already be available online; in column four, enter the corresponding link. You can enter an image description in column five.  </p>
+<p><img src="/images/9556dc3fedaf45eb494ddd2f5a2861c5.png" alt="9556dc3fedaf45eb494ddd2f5a2861c5.png"></p>
+<p>If you have exported the table as a tsv file, you can import it into autodone using <code>Import new Group</code>. Click on the <code>File to import group from</code> button and select the corresponding file from the file selection. Click <code>Import</code>. <strong>Caution</strong>: This process can take quite a long time for large files with many images. In this case, we recommend splitting the corpus into smaller files.</p>
+<p><img src="/images/f36f9dbec8d27ae49acd94386b6fbe18.png" alt="f36f9dbec8d27ae49acd94386b6fbe18.png"></p>
+<p>After the import, you will receive a preview of the posts found, including the date (<strong>caution</strong>: UTC!) and number of media. You will also find a list of any errors that may have occurred (if the date, time or text were not well-formed or images were not found). Click <code>Create</code> to import the status list in the state in which you see it. </p>
+<p><img src="/images/6fde85878702ac98e7621b8702a75d88.png" alt="6fde85878702ac98e7621b8702a75d88.png"></p>
+<p>As soon as the group has been created, you can edit it further. The group setting <code>Enable Group</code>, with which you enable publication on Mastodon, is particularly important. Use <code>Thread Group</code> to specify whether each post in the group should be published as a reply to the previously published post. An active Thread should look like this: </p>
+<p><img src="/images/e0d0f12287b598fb36967dadf2879ffe.png" alt="e0d0f12287b598fb36967dadf2879ffe.png"></p>
+<p>After posts have been published, you get a check mark instead of the hourglass.</p>
+<p><img src="/images/8bcef627ed2c51dcd9791fffbe0283ca.png" alt="8bcef627ed2c51dcd9791fffbe0283ca.png"></p>
+<p>You can find them on Mastodon:</p>
+<p><img src="/images/0f7b7f6073a15d2bb61f9243e7a93e84.png" alt="0f7b7f6073a15d2bb61f9243e7a93e84.png"></p>
+<p>You can make further changes to the group at any time (modify current posts, add new posts, delete posts, attach images, etc.). However, the most important functions are explained here first. More will follow.</p>
+
+
   </main>
 
   <th:block th:insert="~{elements/navend}" />
