@@ -8,4 +8,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 @NoRepositoryBean()
 public interface BaseRepository<T> extends CrudRepository<T, UUID>, PagingAndSortingRepository<T, UUID> {
+
+	public Iterable<BaseEntity> findAllBy();
+
 }
