@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import de.uoc.dh.idh.autodone.base.BaseEntity;
 import de.uoc.dh.idh.autodone.base.BaseRepository;
 import de.uoc.dh.idh.autodone.entities.GroupEntity;
 import de.uoc.dh.idh.autodone.entities.StatusEntity;
@@ -28,7 +29,7 @@ public interface StatusRepository extends BaseRepository<StatusEntity> {
 
 	//
 
-	public Iterable<StatusEntity> findAllByDateAfterAndGroupEnabledTrueAndIdIsNull(
+	public Iterable<BaseEntity> findAllByDateAfterAndGroupEnabledTrueAndIdIsNull(
 
 			Instant date
 

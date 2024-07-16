@@ -35,6 +35,10 @@ public class MediaService extends BaseService<MediaEntity> {
 
 	//
 
+	public MediaEntity getAny(UUID uuid) {
+		return mediaRepository.findById(uuid).get();
+	}
+
 	public Page<MediaEntity> getPage(String page, String sort, StatusEntity status) {
 		return getPage(pageRequest(page, sort), status.media);
 	}
@@ -42,7 +46,7 @@ public class MediaService extends BaseService<MediaEntity> {
 	//
 
 	public MediaEntity publish(UUID uuid) {
-		return publish(mediaRepository.findById(uuid).get());
+		return publish(getAny(uuid));
 	}
 
 	public MediaEntity publish(MediaEntity media) {

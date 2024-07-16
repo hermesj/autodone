@@ -71,9 +71,11 @@ public class TimerService {
 
 		if (status.id == null) {
 			if (delay > AUTODONE_SCHEDULING && future == null) {
-				future = scheduledStatus.put(status.uuid, scheduler.schedule(() -> {
-					scheduledStatus.remove(status.uuid);
-					return statusService.publish(status.uuid);
+				var uuid = status.uuid;
+
+				future = scheduledStatus.put(uuid, scheduler.schedule(() -> {
+					scheduledStatus.remove(uuid);
+					return statusService.publish(uuid);
 				}, delay, SECONDS));
 			}
 
@@ -106,9 +108,11 @@ public class TimerService {
 
 		if (media.id == null) {
 			if (delay > AUTODONE_SCHEDULING && future == null) {
-				future = scheduledMedia.put(media.uuid, scheduler.schedule(() -> {
-					scheduledMedia.remove(media.uuid);
-					return mediaService.publish(media.uuid);
+				var uuid = media.uuid;
+
+				future = scheduledMedia.put(uuid, scheduler.schedule(() -> {
+					scheduledMedia.remove(uuid);
+					return mediaService.publish(uuid);
 				}, delay, SECONDS));
 			}
 		}
@@ -126,11 +130,13 @@ public class TimerService {
 
 	@PostConstruct()
 	private void postConstruct() {
-		new TransactionTemplate(transactionManager).executeWithoutResult((ignored) -> {
-			for (var status : statusService.getAll(now().plusSeconds(AUTODONE_SCHEDULING))) {
-				scheduleStatus(status);
-			}
-		});
+		for (var entity : new TransactionTemplate(transactionManager).execute((ignored) -> {
+			return statusService.getAll(now().plusSeconds(AUTODONE_SCHEDULING));
+		})) {
+			new TransactionTemplate(transactionManager).executeWithoutResult((ignored) -> {
+				scheduleStatus(statusService.getAny(entity.getUuid()));
+			});
+		}
 	}
 
 }
