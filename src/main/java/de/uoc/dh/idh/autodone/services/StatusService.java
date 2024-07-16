@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import de.uoc.dh.idh.autodone.base.BaseEntity;
 import de.uoc.dh.idh.autodone.base.BaseService;
 import de.uoc.dh.idh.autodone.entities.GroupEntity;
 import de.uoc.dh.idh.autodone.entities.StatusEntity;
@@ -35,8 +36,12 @@ public class StatusService extends BaseService<StatusEntity> {
 
 	//
 
-	public Iterable<StatusEntity> getAll(Instant date) {
+	public Iterable<BaseEntity> getAll(Instant date) {
 		return statusRepository.findAllByDateAfterAndGroupEnabledTrueAndIdIsNull(date);
+	}
+
+	public StatusEntity getAny(UUID uuid) {
+		return statusRepository.findById(uuid).get();
 	}
 
 	public Page<StatusEntity> getPage(String page, String sort, GroupEntity group) {
@@ -46,7 +51,7 @@ public class StatusService extends BaseService<StatusEntity> {
 	//
 
 	public StatusEntity publish(UUID uuid) {
-		return publish(statusRepository.findById(uuid).get());
+		return publish(getAny(uuid));
 	}
 
 	public StatusEntity publish(StatusEntity status) {
