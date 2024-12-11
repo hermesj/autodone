@@ -35,6 +35,19 @@
         <label class="form-label">Content for the Status</label>
       </div>
     </div>
+    <div class="col-md-6 mb-3">
+      <label class="form-label fw-bold" for="visibility">Visibility</label>
+      <div class="form-floating">
+        <select th:field="*{visibility}" class="form-select">
+          <option value="PUBLIC">Public</option>
+          <option value="UNLISTED">Unlisted</option>
+          <option value="PRIVATE">Private</option>
+          <option value="DIRECT">Direct</option>
+        </select>
+        <label class="form-label">Visibility of the Status</label>
+      </div>
+
+    </div>
   </div>
   <div class="accordion-footer d-flex flex-row-reverse">
     <button th:text="*{uuid} ? 'Update' : 'Create'" class="btn btn-outline-primary"></button>
