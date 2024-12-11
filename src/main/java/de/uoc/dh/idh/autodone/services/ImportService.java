@@ -25,6 +25,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import de.uoc.dh.idh.autodone.utils.Visibility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -128,10 +129,14 @@ public class ImportService {
 							status.media.get(0).description = columns[4];
 						}
 					}
+
 				} catch (Exception exception) {
 					status.exceptions.add(new ParseException("Image not usable (4th column)", number));
 				}
 			}
+
+			// Set default visibility
+			status.visibility = Visibility.PUBLIC;
 		}
 
 		return status;

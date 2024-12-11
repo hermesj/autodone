@@ -7,6 +7,7 @@
         <th>Date (UTC)</th>
         <th class="text-center">Scheduling</th>
         <th class="text-end">Media</th>
+        <th class="text-center">Visibility</th>
         <th class="text-end">Actions</th>
       </tr>
     </thead>
@@ -23,6 +24,7 @@
           </th:block>
         </td>
         <td th:text="*{media} ? *{media.size()} : 0" class="text-end"></td>
+        <td th:text="*{visibility}" class="text-center"></td>
         <td class="text-end text-nowrap">
           <a th:href="@{/status(uuid=*{uuid})}" class="btn btn-sm btn-outline-primary">
             <i class="bi bi-eye-fill"></i>
