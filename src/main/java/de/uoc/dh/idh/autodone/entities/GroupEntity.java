@@ -16,8 +16,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Transient;
 import lombok.Data;
+import de.uoc.dh.idh.autodone.utils.Visibility;
+
 
 @Data()
 @Entity()
@@ -49,6 +53,10 @@ public class GroupEntity {
 
 	@Column(nullable = false)
 	public boolean threaded;
+
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	public Visibility visibility;
 
 	//
 

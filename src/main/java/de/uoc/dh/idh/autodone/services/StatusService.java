@@ -58,8 +58,8 @@ public class StatusService extends BaseService<StatusEntity> {
 		var data = new HashMap<String, Object>();
 		data.put("status", status.status);
 
-		if (status.visibility != null) {
-			data.put("visibility", status.visibility.toString());
+		if (status.group.visibility != null) {
+			data.put("visibility", status.group.visibility.toString());
 		}
 
 
@@ -78,14 +78,6 @@ public class StatusService extends BaseService<StatusEntity> {
 
 		var href = remoteHref(status.group.token.server.domain, MASTODON_API_STATUS);
 		var post = request(StatusEntity.class).auth(status.group.token).post(href, data);
-
-		System.out.println("post");
-		System.out.println(post);
-		System.out.println("status");
-		System.out.println(status);
-
-		System.out.println("exception");
-		System.out.println(status.exceptions);
 
 		return save(copyFields(post, status, FORCE));
 	}
