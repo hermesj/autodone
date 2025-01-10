@@ -51,8 +51,6 @@ public class ImportService {
 
 		group.exceptions = new ArrayList<Exception>();
 		group.status = new ArrayList<StatusEntity>();
-		//set default visibility
-		group.visibility = Visibility.PUBLIC;
 
 		try (var reader = new BufferedReader(new InputStreamReader(inputStream))) {
 			while ((line = reader.readLine()) != null) {
