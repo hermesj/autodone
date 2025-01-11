@@ -100,11 +100,10 @@ public class GroupController {
 		statusService.save(firstStatus);
 
 		for (StatusEntity status : sortedStatuses.subList(1, sortedStatuses.size())) {
-			if (!status.equals(firstStatus)) {
-				Instant newStatusTime = status.getDate().plus(timeDifference);
-				status.setDate(newStatusTime);
-				statusService.save(status);
-			}
+			Instant newStatusTime = status.getDate().plus(timeDifference);
+			status.setDate(newStatusTime);
+			statusService.save(status);
+
 		}
 		groupService.save(group);
 
