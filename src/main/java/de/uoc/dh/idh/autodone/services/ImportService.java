@@ -129,12 +129,10 @@ public class ImportService {
 							status.media.get(0).description = columns[4];
 						}
 					}
-
 				} catch (Exception exception) {
 					status.exceptions.add(new ParseException("Image not usable (4th column)", number));
 				}
 			}
-
 		}
 
 		return status;
