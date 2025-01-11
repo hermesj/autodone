@@ -102,14 +102,17 @@ public class ImportService {
 			} else {
 				throw new Exception("Please enter a correct date and time in the first two columns");
 			}
+			
+			String content = columns[2].replace("\\n", "\n");
 
-			if (columns[2].isEmpty()) {
+
+			if (content.isEmpty()) {
 				status.exceptions.add(new ParseException("No content found (3rd column)", number));
-			} else if (columns[2].length() > 500) {
+			} else if (content.length() > 500) {
 				status.exceptions.add(new ParseException("Content trimmed (3rd column)", number));
-				status.status = columns[2].substring(0, 495) + "[...]";
+				status.status = content.substring(0, 495) + "[...]";
 			} else {
-				status.status = columns[2];
+				status.status = content;
 			}
 
 			if (columns.length > 3) {
