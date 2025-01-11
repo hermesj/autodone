@@ -93,16 +93,13 @@ public class GroupController {
 			LocalDateTime localDateTime = LocalDateTime.parse(newTimeString, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 			Instant newScheduledTime = localDateTime.toInstant(ZoneOffset.UTC);
 
-			// Calculate time difference
 			Duration timeDifference = Duration.between(firstStatusTime, newScheduledTime);
 
-			// Update first status to the newly entered time
 			ZoneId zoneId = ZoneId.systemDefault();
 			Instant instant = newScheduledTime.atZone(zoneId).toInstant();
 			firstStatus.setDate(instant);
 			statusService.save(firstStatus);
 
-			// Add the time difference to the current status time
 			for (StatusEntity status : statuses) {
 				if (!status.equals(firstStatus)) {
 					Instant newStatusTime = status.getDate().plus(timeDifference);
