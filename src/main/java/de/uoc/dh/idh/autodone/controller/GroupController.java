@@ -81,9 +81,7 @@ public class GroupController {
 
 		GroupEntity group = groupService.getOne((String) form.get("uuid"));
 
-		List<StatusEntity> statuses = group.getStatus();
-
-		List<StatusEntity> sortedStatuses = statuses.stream()
+		List<StatusEntity> sortedStatuses = group.getStatus().stream()
 				.sorted(Comparator.comparing(StatusEntity::getDate))
 				.collect(Collectors.toList());
 
@@ -101,7 +99,7 @@ public class GroupController {
 		firstStatus.setDate(newScheduledTime);
 		statusService.save(firstStatus);
 
-		for (StatusEntity status : statuses) {
+		for (StatusEntity status : sortedStatuses.subList(1, sortedStatuses.size())) {
 			if (!status.equals(firstStatus)) {
 				Instant newStatusTime = status.getDate().plus(timeDifference);
 				status.setDate(newStatusTime);
