@@ -5,7 +5,16 @@ import static de.uoc.dh.idh.autodone.utils.ObjectUtils.mapFields;
 import static de.uoc.dh.idh.autodone.utils.WebUtils.href;
 import static java.util.Map.of;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -60,6 +69,51 @@ public class GroupController {
 			model.addAttribute("page", page);
 			return "entities/group";
 		}
+	}
+
+	//
+
+	@PostMapping("/reschedule")
+	public String postReschedule(@RequestParam() Map<String, String> form) {
+
+		if (form.containsKey("uuid")) {
+			GroupEntity group = groupService.getOne((String) form.get("uuid"));
+
+			List<StatusEntity> statuses = group.getStatus();
+
+			List<StatusEntity> sortedStatuses = statuses.stream()
+					.sorted(Comparator.comparing(StatusEntity::getDate))
+					.collect(Collectors.toList());
+
+			StatusEntity firstStatus = sortedStatuses.get(0);
+
+			Instant firstStatusTime = firstStatus.getDate();
+
+			String newTimeString = form.get("newTime");
+			LocalDateTime localDateTime = LocalDateTime.parse(newTimeString, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+			Instant newScheduledTime = localDateTime.toInstant(ZoneOffset.UTC);
+
+			// Calculate time difference
+			Duration timeDifference = Duration.between(firstStatusTime, newScheduledTime);
+
+			// Update first status to the newly entered time
+			ZoneId zoneId = ZoneId.systemDefault();
+			Instant instant = newScheduledTime.atZone(zoneId).toInstant();
+			firstStatus.setDate(instant);
+			statusService.save(firstStatus);
+
+			// Add the time difference to the current status time
+			for (StatusEntity status : statuses) {
+				if (!status.equals(firstStatus)) {
+					Instant newStatusTime = status.getDate().plus(timeDifference);
+					status.setDate(newStatusTime);
+					statusService.save(status);
+				}
+			}
+			groupService.save(group);
+		}
+
+		return "redirect:/group?uuid=" + form.get("uuid");
 	}
 
 	//

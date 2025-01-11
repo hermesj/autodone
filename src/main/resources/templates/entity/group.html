@@ -46,6 +46,21 @@
       </h2>
       <th:block th:insert="~{tables/status}" />
       <th:block th:if="${page.totalPages} > 1" th:insert="~{elements/pager}" />
+      <!-- Form for rescheduling -->
+      <form th:action="@{/group/reschedule}" th:method="post">
+        <input type="hidden" th:field="*{group.uuid}" th:value="${group.uuid}" />
+        <div class="col-md-6 mb-3">
+            <label class="form-label fw-bold" for="newTime">Reschedule Group</label>
+            <div class="form-floating">
+                <input type="datetime-local"name="newTime" class="form-control" required />
+                <label for="newTime">Select New Date and Time</label>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Reschedule</button>
+        </div>
+    </form>
+    
+    
+    
     </th:block>
   </main>
 
