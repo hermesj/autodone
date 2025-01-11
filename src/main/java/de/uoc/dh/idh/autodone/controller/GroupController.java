@@ -8,7 +8,6 @@ import static java.util.Map.of;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
@@ -29,6 +28,7 @@ import de.uoc.dh.idh.autodone.entities.GroupEntity;
 import de.uoc.dh.idh.autodone.entities.StatusEntity;
 import de.uoc.dh.idh.autodone.services.GroupService;
 import de.uoc.dh.idh.autodone.services.StatusService;
+import jakarta.servlet.http.HttpSession;
 
 @Controller()
 @RequestMapping("/group")
@@ -39,6 +39,9 @@ public class GroupController {
 
 	@Autowired()
 	private StatusService statusService;
+
+	@Autowired()
+	private HttpSession httpSession;
 
 	//
 
@@ -76,39 +79,36 @@ public class GroupController {
 	@PostMapping("/reschedule")
 	public String postReschedule(@RequestParam() Map<String, String> form) {
 
-		if (form.containsKey("uuid")) {
-			GroupEntity group = groupService.getOne((String) form.get("uuid"));
+		GroupEntity group = groupService.getOne((String) form.get("uuid"));
 
-			List<StatusEntity> statuses = group.getStatus();
+		List<StatusEntity> statuses = group.getStatus();
 
-			List<StatusEntity> sortedStatuses = statuses.stream()
-					.sorted(Comparator.comparing(StatusEntity::getDate))
-					.collect(Collectors.toList());
+		List<StatusEntity> sortedStatuses = statuses.stream()
+				.sorted(Comparator.comparing(StatusEntity::getDate))
+				.collect(Collectors.toList());
 
-			StatusEntity firstStatus = sortedStatuses.get(0);
+		StatusEntity firstStatus = sortedStatuses.get(0);
 
-			Instant firstStatusTime = firstStatus.getDate();
+		Instant firstStatusTime = firstStatus.getDate();
 
-			String newTimeString = form.get("newTime");
-			LocalDateTime localDateTime = LocalDateTime.parse(newTimeString, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-			Instant newScheduledTime = localDateTime.toInstant(ZoneOffset.UTC);
+		String newTimeString = form.get("newTime");
+		LocalDateTime localDateTime = LocalDateTime.parse(newTimeString, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+		var offset = (ZoneOffset) httpSession.getAttribute("zoneOffset");
+		Instant newScheduledTime = localDateTime.toInstant(offset);
 
-			Duration timeDifference = Duration.between(firstStatusTime, newScheduledTime);
+		Duration timeDifference = Duration.between(firstStatusTime, newScheduledTime);
 
-			ZoneId zoneId = ZoneId.systemDefault();
-			Instant instant = newScheduledTime.atZone(zoneId).toInstant();
-			firstStatus.setDate(instant);
-			statusService.save(firstStatus);
+		firstStatus.setDate(newScheduledTime);
+		statusService.save(firstStatus);
 
-			for (StatusEntity status : statuses) {
-				if (!status.equals(firstStatus)) {
-					Instant newStatusTime = status.getDate().plus(timeDifference);
-					status.setDate(newStatusTime);
-					statusService.save(status);
-				}
+		for (StatusEntity status : statuses) {
+			if (!status.equals(firstStatus)) {
+				Instant newStatusTime = status.getDate().plus(timeDifference);
+				status.setDate(newStatusTime);
+				statusService.save(status);
 			}
-			groupService.save(group);
 		}
+		groupService.save(group);
 
 		return "redirect:/group?uuid=" + form.get("uuid");
 	}
