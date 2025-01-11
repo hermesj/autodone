@@ -58,11 +58,8 @@ public class StatusService extends BaseService<StatusEntity> {
 		var data = new HashMap<String, Object>();
 		data.put("status", status.status);
 
-		if (status.group.visibility != null) {
-			data.put("visibility", status.group.visibility.toString());
-		}
-
-
+		data.put("visibility", status.group.visibility.toString());
+		
 		if (status.media != null) {
 			data.put("media_ids", status.media.stream().map((media) -> media.id).toList());
 		}
