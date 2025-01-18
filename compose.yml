@@ -1,5 +1,3 @@
-version: "3"
-
 x-anchor:
   service: &service
     hostname: localhost
@@ -40,7 +38,7 @@ services:
 
   mastodon:
     <<: *service
-    image: bitnami/mastodon:4
+    image: bitnami/mastodon:4.2.9
     ports: [3000:3000]
     environment:
       <<: *environment
