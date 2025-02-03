@@ -114,7 +114,11 @@ public class ImportService {
 
 			if (columns.length > 3) {
 				try {
-					status.media.add(mapFields(of("status", status), importMedia(columns[3])));
+					if (columns[3].matches("^https?://.+")) {
+						status.media.add(mapFields(of("status", status), importMedia(columns[3])));
+					} else {
+						throw new SecurityException("Illegal protocol");
+					}
 
 					if (status.media.get(0).description != null) {
 						status.exceptions.add(new ParseException("Image scaled down (4th column)", number));
@@ -143,7 +147,9 @@ public class ImportService {
 		var media = new MediaEntity();
 		var request = new URL(url).openConnection();
 
-		media.contentType = request.getContentType();
+		if (!(media.contentType = request.getContentType()).startsWith("image/")) {
+			throw new IllegalArgumentException("Not an image file");
+		}
 
 		if (request.getContentLength() < 1024000) {
 			media.file = request.getInputStream().readAllBytes();
