@@ -84,6 +84,7 @@ public class ImportService {
 		} else {
 			var date = dateTimeUtils.parseDate(columns[0]);
 			var time = dateTimeUtils.parseTime(columns[1]);
+			var content = columns[2].replace("\\n", "\n");
 
 			if (date == null) {
 				status.exceptions.add(new ParseException("Date not parseable (1st column)", number));
@@ -102,9 +103,6 @@ public class ImportService {
 			} else {
 				throw new Exception("Please enter a correct date and time in the first two columns");
 			}
-			
-			String content = columns[2].replace("\\n", "\n");
-
 
 			if (content.isEmpty()) {
 				status.exceptions.add(new ParseException("No content found (3rd column)", number));
