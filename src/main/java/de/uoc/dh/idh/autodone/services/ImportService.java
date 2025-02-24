@@ -84,6 +84,7 @@ public class ImportService {
 		} else {
 			var date = dateTimeUtils.parseDate(columns[0]);
 			var time = dateTimeUtils.parseTime(columns[1]);
+			var content = columns[2].replace("\\n", "\n");
 
 			if (date == null) {
 				status.exceptions.add(new ParseException("Date not parseable (1st column)", number));
@@ -103,13 +104,13 @@ public class ImportService {
 				throw new Exception("Please enter a correct date and time in the first two columns");
 			}
 
-			if (columns[2].isEmpty()) {
+			if (content.isEmpty()) {
 				status.exceptions.add(new ParseException("No content found (3rd column)", number));
-			} else if (columns[2].length() > 500) {
+			} else if (content.length() > 500) {
 				status.exceptions.add(new ParseException("Content trimmed (3rd column)", number));
-				status.status = columns[2].substring(0, 495) + "[...]";
+				status.status = content.substring(0, 495) + "[...]";
 			} else {
-				status.status = columns[2];
+				status.status = content;
 			}
 
 			if (columns.length > 3) {
