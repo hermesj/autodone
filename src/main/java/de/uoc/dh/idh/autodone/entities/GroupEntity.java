@@ -1,6 +1,7 @@
 package de.uoc.dh.idh.autodone.entities;
 
 import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.UUID;
 
@@ -12,6 +13,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
@@ -24,6 +26,12 @@ import lombok.Data;
 @JsonNaming(SnakeCaseStrategy.class)
 public class GroupEntity {
 
+	public enum Visibility {
+		DIRECT, PRIVATE, PUBLIC, UNLISTED
+	}
+
+	//
+
 	@Id()
 	@GeneratedValue(strategy = UUID)
 	public UUID uuid;
@@ -35,6 +43,12 @@ public class GroupEntity {
 
 	@OneToMany(cascade = ALL, fetch = LAZY, mappedBy = "group")
 	public List<StatusEntity> status;
+
+	//
+
+	@Enumerated(STRING)
+	@Column(nullable = false)
+	public Visibility visibility;
 
 	//
 

@@ -9,6 +9,25 @@
       </div>
     </div>
     <div class="col-md-6 mb-3">
+      <label class="form-label fw-bold" for="visibility">Group Visibility</label>
+      <div class="form-floating">
+        <select placeholder required th:field="*{visibility}" class="form-select">
+          <option selected value="PUBLIC">Public</option>
+          <option value="PRIVATE">Private</option>
+          <option value="UNLISTED">Unlisted</option>
+          <option value="DIRECT">Direct</option>
+        </select>
+        <label class="form-label">Visibility of the Group</label>
+      </div>
+    </div>
+    <div class="col-md-6 mb-3">
+      <label class="form-label fw-bold" for="description">Group Description</label>
+      <div class="form-floating">
+        <input placeholder th:field="*{description}" class="form-control">
+        <label class="form-label">Description for the Group</label>
+      </div>
+    </div>
+    <div class="col-md-6 mb-3">
       <label class="form-label fw-bold">Group Settings</label>
       <div class="form-check form-switch">
         <input th:field="*{enabled}" class="form-check-input" id="enabled" type="checkbox">
@@ -25,13 +44,6 @@
           <strong>Thread Group</strong>
           <small>(append subsequent status as reply)</small>
         </label>
-      </div>
-    </div>
-    <div class="col-md-6 mb-3">
-      <label class="form-label fw-bold" for="description">Group Description</label>
-      <div class="form-floating">
-        <input placeholder th:field="*{description}" class="form-control">
-        <label class="form-label">Description for the Group</label>
       </div>
     </div>
   </div>
