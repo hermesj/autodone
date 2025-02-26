@@ -1,21 +1,21 @@
 x-anchor:
   service: &service
     hostname: localhost
-    environment: &environment
+    environment:
 
       # AUTODONE
       SERVER_PORT: 4000
       SPRING_PROFILES_ACTIVE: test
 
       # MASTODON
-      LOCAL_DOMAIN: $HOSTNAME:3000
-      MASTODON_WEB_DOMAIN: $HOSTNAME:3000
-
       MASTODON_ADMIN_EMAIL: autodone@localhost
       MASTODON_ADMIN_USERNAME: autodone
       MASTODON_ADMIN_PASSWORD: autodone
 
-      ALLOW_EMPTY_PASSWORD: yes
+      LOCAL_DOMAIN: ${HOSTNAME?External Hostname or IP Address}:3000
+      MASTODON_WEB_DOMAIN: ${HOSTNAME?External Hostname or IP Address}:3000
+
+      ALLOW_EMPTY_PASSWORD: true
       MASTODON_DATABASE_HOST: postgres
       MASTODON_DATABASE_NAME: autodone
       MASTODON_DATABASE_USERNAME: autodone
@@ -32,37 +32,19 @@ services:
   autodone:
     <<: *service
     command: mvn -f /src spring-boot:run
-    image: maven:3-eclipse-temurin-17-alpine
+    image: docker.io/library/maven:3-eclipse-temurin-17-alpine
     ports: [4000:4000]
-    volumes: [$PWD:/src]
+    volumes: [.:/src]
 
   mastodon:
     <<: *service
-    image: bitnami/mastodon:4.2.9
+    image: docker.io/bitnami/mastodon:4.2.9
     ports: [3000:3000]
-    environment:
-      <<: *environment
-      MASTODON_MODE: web
-
-  # mastodon-streaming:
-  #   <<: *service
-  #   image: bitnami/mastodon:4
-  #   ports: [4000:4000]
-  #   environment:
-  #     <<: *environment
-  #     MASTODON_MODE: streaming
-
-  # mastodon-sidekiq:
-  #   <<: *service
-  #   image: bitnami/mastodon:4
-  #   environment:
-  #     <<: *environment
-  #     MASTODON_MODE: sidekiq
 
   postgres:
     <<: *service
-    image: postgres:16-alpine
+    image: docker.io/library/postgres:alpine
 
   redis:
     <<: *service
-    image: redis:7-alpine
+    image: docker.io/library/redis:alpine
