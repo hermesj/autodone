@@ -3,17 +3,12 @@ package de.uoc.dh.idh.autodone.controller;
 import static de.uoc.dh.idh.autodone.utils.ObjectUtils.FORCE;
 import static de.uoc.dh.idh.autodone.utils.ObjectUtils.mapFields;
 import static de.uoc.dh.idh.autodone.utils.WebUtils.href;
+import static java.time.Duration.between;
+import static java.util.Comparator.comparing;
 import static java.util.Map.of;
 
-import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,27 +16,36 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import de.uoc.dh.idh.autodone.entities.GroupEntity;
 import de.uoc.dh.idh.autodone.entities.StatusEntity;
 import de.uoc.dh.idh.autodone.services.GroupService;
+import de.uoc.dh.idh.autodone.services.MediaService;
 import de.uoc.dh.idh.autodone.services.StatusService;
-import jakarta.servlet.http.HttpSession;
+import de.uoc.dh.idh.autodone.utils.DateTimeUtils;
+import jakarta.persistence.EntityManager;
 
 @Controller()
 @RequestMapping("/group")
 public class GroupController {
 
 	@Autowired()
+	private DateTimeUtils dateTimeUtils;
+
+	@Autowired()
+	private EntityManager entityManager;
+
+	@Autowired()
 	private GroupService groupService;
 
 	@Autowired()
-	private StatusService statusService;
+	private MediaService mediaService;
 
 	@Autowired()
-	private HttpSession httpSession;
+	private StatusService statusService;
 
 	//
 
@@ -76,42 +80,6 @@ public class GroupController {
 
 	//
 
-	@PostMapping("/reschedule")
-	public String postReschedule(@RequestParam() Map<String, String> form) {
-
-		GroupEntity group = groupService.getOne((String) form.get("uuid"));
-
-		List<StatusEntity> sortedStatuses = group.getStatus().stream()
-				.sorted(Comparator.comparing(StatusEntity::getDate))
-				.collect(Collectors.toList());
-
-		StatusEntity firstStatus = sortedStatuses.get(0);
-
-		Instant firstStatusTime = firstStatus.getDate();
-
-		String newTimeString = form.get("newTime");
-		LocalDateTime localDateTime = LocalDateTime.parse(newTimeString, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-		var offset = (ZoneOffset) httpSession.getAttribute("zoneOffset");
-		Instant newScheduledTime = localDateTime.toInstant(offset);
-
-		Duration timeDifference = Duration.between(firstStatusTime, newScheduledTime);
-
-		firstStatus.setDate(newScheduledTime);
-		statusService.save(firstStatus);
-
-		for (StatusEntity status : sortedStatuses.subList(1, sortedStatuses.size())) {
-			Instant newStatusTime = status.getDate().plus(timeDifference);
-			status.setDate(newStatusTime);
-			statusService.save(status);
-
-		}
-		groupService.save(group);
-
-		return "redirect:/group?uuid=" + form.get("uuid");
-	}
-
-	//
-
 	@PostMapping()
 	public String post(@RequestParam() Map<String, String> form) {
 		var group = new GroupEntity();
@@ -121,6 +89,43 @@ public class GroupController {
 		}
 
 		var save = groupService.save(mapFields(form, group, FORCE));
+		return "redirect:/group?uuid=" + save.uuid;
+	}
+
+	//
+
+	@PutMapping()
+	public String put(@RequestParam() Map<String, String> form) {
+		var copy = form.get("copy").equals("on");
+		var date = dateTimeUtils.parse(form.get("date"));
+		var group = groupService.getOne(form.get("uuid"));
+
+		if (group.status.size() > 0 && date.isAfter(Instant.now())) {
+			group.status.sort(comparing((status) -> status.date));
+			var delay = between(group.status.get(0).date, date);
+
+			for (var status : group.status) {
+				status.date = status.date.plus(delay);
+
+				if (copy) {
+					for (var media : status.media) {
+						entityManager.detach(media);
+						media.uuid = null;
+					}
+
+					entityManager.detach(status);
+					status.uuid = null;
+				}
+			}
+
+			if (copy) {
+				entityManager.detach(group);
+				group.name += " (Copy)";
+				group.uuid = null;
+			}
+		}
+
+		var save = groupService.save(group);
 		return "redirect:/group?uuid=" + save.uuid;
 	}
 
