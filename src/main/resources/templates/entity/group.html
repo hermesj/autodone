@@ -37,6 +37,18 @@
           </div>
         </div>
       </div>
+      <div class="accordion-item">
+        <div class="accordion-header">
+          <button class="accordion-button collapsed fw-bold" data-bs-target="#fold-3" data-bs-toggle="collapse">
+            Reschedule Group
+          </button>
+        </div>
+        <div class="accordion-collapse collapse" id="fold-3" data-bs-parent="#accordion">
+          <div class="accordion-body">
+            <th:block th:insert="~{forms/redate}" th:with="action=@{/group}" />
+          </div>
+        </div>
+      </div>
     </div>
 
     <th:block th:if="${page.hasContent()}">
