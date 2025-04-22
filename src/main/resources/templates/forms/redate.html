@@ -1,0 +1,26 @@
+<form th:action="${action}" th:method="put" th:object="${group}" class="m-0" enctype="multipart/form-data">
+  <input th:field="*{uuid}" th:if="*{uuid}" type="hidden">
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <label class="form-label fw-bold" for="date">New Schedule</label>
+      <div class="form-floating">
+        <input placeholder required class="form-control" name="date" type="datetime-local">
+        <label class="form-label">New Date and Time this Group should be published</label>
+      </div>
+    </div>
+    <div class="col-md-6 mb-3">
+      <label class="form-label fw-bold">Rescheduling Settings</label>
+      <div class="form-check form-switch">
+        <input checked class="form-check-input" id="copy" name="copy" type="checkbox">
+        <input name="copy" type="hidden" value="false">
+        <label class="form-check-label" for="copy">
+          <strong>Copy Group</strong>
+          <small>(creates a new, rescheduled group)</small>
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="accordion-footer d-flex justify-content-end">
+    <button class="btn btn-outline-primary">Confirm</button>
+  </div>
+</form>

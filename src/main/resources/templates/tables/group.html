@@ -4,6 +4,7 @@
       <tr>
         <th>Name</th>
         <th>Description</th>
+        <th class="text-center">Visibility</th>
         <th class="text-center">Enabled</th>
         <th class="text-center">Threaded</th>
         <th class="text-end">Status</th>
@@ -14,6 +15,12 @@
       <tr th:each="group : ${page}" th:object="${group}">
         <td th:text="*{#strings.abbreviate(name, 50)}"></td>
         <td th:text="*{description}"></td>
+        <td th:switch="*{visibility.name()}" class="text-center">
+          <i th:case="PUBLIC" title="Public" class="bi bi-globe"></i>
+          <i th:case="PRIVATE" title="Private" class="bi bi-lock"></i>
+          <i th:case="UNLISTED" title="Unlisted" class="bi bi-unlock"></i>
+          <i th:case="DIRECT" title="Direct" class="bi bi-at"></i>
+        </td>
         <td class="text-center">
           <div class="d-inline-block form-check form-switch m-0">
             <input disabled th:checked="*{enabled}" class="form-check-input" type="checkbox">

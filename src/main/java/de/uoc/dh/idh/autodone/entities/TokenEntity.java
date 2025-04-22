@@ -23,7 +23,7 @@ import lombok.Data;
 @Data()
 @Entity()
 @JsonNaming(SnakeCaseStrategy.class)
-@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "server", "username" }) })
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "server_uuid", "username" }) })
 public class TokenEntity {
 
 	@Id()

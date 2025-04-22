@@ -31,8 +31,18 @@ public class DateTimeUtils {
 
 	//
 
+	public ZoneOffset offset() {
+		return (ZoneOffset) httpSession.getAttribute("zoneOffset");
+	}
+
+	//
+
+	public Instant parse(String dateTime) {
+		return LocalDateTime.parse(dateTime).toInstant(offset());
+	}
+
 	public Instant parse(LocalDate date, LocalTime time) {
-		return of(date, time, (ZoneOffset) httpSession.getAttribute("zoneOffset")).toInstant();
+		return of(date, time, offset()).toInstant();
 	}
 
 	//
@@ -78,8 +88,7 @@ public class DateTimeUtils {
 
 			@Override()
 			public String convert(Instant source) {
-				var offset = (ZoneOffset) httpSession.getAttribute("zoneOffset");
-				return conversionService.convert(ofInstant(source, offset), String.class);
+				return conversionService.convert(ofInstant(source, offset()), String.class);
 			}
 
 		});
@@ -88,8 +97,7 @@ public class DateTimeUtils {
 
 			@Override()
 			public Instant convert(String source) {
-				var offset = (ZoneOffset) httpSession.getAttribute("zoneOffset");
-				return conversionService.convert(source, LocalDateTime.class).toInstant(offset);
+				return conversionService.convert(source, LocalDateTime.class).toInstant(offset());
 			}
 
 		});
