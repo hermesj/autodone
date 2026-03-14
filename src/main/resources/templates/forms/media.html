@@ -5,7 +5,35 @@
     <div th:if="*{uuid}" class="col-md-6 mb-3">
       <div class="col-md-12 mb-3">
         <label class="form-label fw-bold" for="file">Media Preview</label>
-        <img th:title="*{description}" th:src="*{url}" class="border img-fluid rounded w-100">
+        <th:block th:if="*{loadStatus} == null or *{loadStatus.name()} == 'READY'">
+          <img th:title="*{description}" th:src="*{url}" class="border img-fluid rounded w-100">
+        </th:block>
+        <th:block th:if="*{loadStatus} != null and *{loadStatus.name()} == 'PENDING'">
+          <div class="border rounded w-100 d-flex align-items-center justify-content-center bg-light text-muted" style="min-height: 200px;">
+            <div class="text-center">
+              <i class="bi bi-clock fs-1"></i>
+              <div class="mt-2">Waiting for download...</div>
+              <div th:if="*{sourceUrl}" th:text="*{sourceUrl}" class="small text-truncate mt-1" style="max-width: 300px;"></div>
+            </div>
+          </div>
+        </th:block>
+        <th:block th:if="*{loadStatus} != null and *{loadStatus.name()} == 'LOADING'">
+          <div class="border rounded w-100 d-flex align-items-center justify-content-center bg-light text-primary" style="min-height: 200px;">
+            <div class="text-center">
+              <div class="spinner-border" role="status"></div>
+              <div class="mt-2">Downloading...</div>
+            </div>
+          </div>
+        </th:block>
+        <th:block th:if="*{loadStatus} != null and *{loadStatus.name()} == 'ERROR'">
+          <div class="border rounded w-100 d-flex align-items-center justify-content-center bg-light text-danger" style="min-height: 200px;">
+            <div class="text-center">
+              <i class="bi bi-exclamation-triangle fs-1"></i>
+              <div class="mt-2">Download failed</div>
+              <div th:if="*{sourceUrl}" th:text="*{sourceUrl}" class="small text-truncate mt-1" style="max-width: 300px;"></div>
+            </div>
+          </div>
+        </th:block>
       </div>
     </div>
     <div th:classappend="'col-md-' + (*{uuid} ? 6 : 12)">

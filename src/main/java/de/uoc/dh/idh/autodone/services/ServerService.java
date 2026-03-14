@@ -44,6 +44,7 @@ public class ServerService {
 
 		if (metadata) {
 			server = copyFields(server, metadata(domain));
+			server.domain = domain;
 
 			if (server.uuid == null) {
 				server = serverRepository.save(copyFields(register(server.domain), server));

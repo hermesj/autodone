@@ -60,7 +60,14 @@ public class StatusService extends BaseService<StatusEntity> {
 		data.put("visibility", status.group.visibility.name().toLowerCase());
 
 		if (status.media != null) {
-			data.put("media_ids", status.media.stream().map((media) -> media.id).toList());
+			var mediaIds = status.media.stream()
+					.filter((media) -> media.id != null)
+					.map((media) -> media.id)
+					.toList();
+
+			if (!mediaIds.isEmpty()) {
+				data.put("media_ids", mediaIds);
+			}
 		}
 
 		if (status.group.threaded) {
