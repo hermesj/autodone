@@ -50,6 +50,12 @@ public class MediaService extends BaseService<MediaEntity> {
 	}
 
 	public MediaEntity publish(MediaEntity media) {
+		// Skip media that hasn't been downloaded yet
+		if (media.file == null || media.loadStatus == MediaEntity.LoadStatus.PENDING
+				|| media.loadStatus == MediaEntity.LoadStatus.LOADING) {
+			return media;
+		}
+
 		var data = new LinkedMultiValueMap<String, Object>();
 		data.add("description", media.description);
 		data.add("filename", media.uuid.toString());

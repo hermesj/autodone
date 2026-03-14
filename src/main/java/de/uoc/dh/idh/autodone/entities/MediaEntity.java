@@ -1,5 +1,6 @@
 package de.uoc.dh.idh.autodone.entities;
 
+import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.UUID;
 import static java.util.Base64.getEncoder;
 
@@ -10,6 +11,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
@@ -19,6 +21,12 @@ import lombok.Data;
 @Entity()
 @JsonNaming(SnakeCaseStrategy.class)
 public class MediaEntity {
+
+	public enum LoadStatus {
+		PENDING, LOADING, READY, ERROR
+	}
+
+	//
 
 	@Id()
 	@GeneratedValue(strategy = UUID)
@@ -42,6 +50,13 @@ public class MediaEntity {
 
 	@Column()
 	public String id;
+
+	@Column()
+	public String sourceUrl;
+
+	@Enumerated(STRING)
+	@Column()
+	public LoadStatus loadStatus;
 
 	@Column()
 	public String url;

@@ -30,11 +30,12 @@
     <div class="col-md-6 mb-3">
       <label class="form-label fw-bold">Group Settings</label>
       <div class="form-check form-switch">
-        <input th:field="*{enabled}" class="form-check-input" id="enabled" type="checkbox">
+        <input th:field="*{enabled}" th:disabled="${mediaLoading != null and mediaLoading and not group.enabled}" class="form-check-input" id="enabled" type="checkbox">
         <input name="enabled" type="hidden" value="false">
         <label class="form-check-label" for="enabled">
           <strong>Enable Group</strong>
-          <small>(activates scheduled submissions)</small>
+          <small th:if="${mediaLoading != null and mediaLoading}" class="text-warning">(media still downloading...)</small>
+          <small th:unless="${mediaLoading != null and mediaLoading}">(activates scheduled submissions)</small>
         </label>
       </div>
       <div class="form-check form-switch">

@@ -38,7 +38,7 @@ services:
 
   mastodon:
     <<: *service
-    image: docker.io/bitnami/mastodon:4.2.9
+    image: docker.io/bitnamilegacy/mastodon:4.2.9
     ports: [3000:3000]
 
   postgres:

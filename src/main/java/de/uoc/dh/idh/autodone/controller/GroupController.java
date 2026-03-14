@@ -20,6 +20,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import static de.uoc.dh.idh.autodone.entities.MediaEntity.LoadStatus.LOADING;
+import static de.uoc.dh.idh.autodone.entities.MediaEntity.LoadStatus.PENDING;
+
 import de.uoc.dh.idh.autodone.entities.GroupEntity;
 import de.uoc.dh.idh.autodone.entities.StatusEntity;
 import de.uoc.dh.idh.autodone.services.GroupService;
@@ -64,9 +67,15 @@ public class GroupController {
 			var status = mapFields(of("group", group), new StatusEntity());
 			var page = statusService.getPage(params.get("page"), params.get("sort"), group);
 
+			var mediaLoading = group.status != null && group.status.stream()
+					.filter(s -> s.media != null)
+					.flatMap(s -> s.media.stream())
+					.anyMatch(m -> m.loadStatus == PENDING || m.loadStatus == LOADING);
+
 			model.addAttribute("group", group);
 			model.addAttribute("status", status);
 			model.addAttribute("page", page);
+			model.addAttribute("mediaLoading", mediaLoading);
 			return "entity/group";
 		} else {
 			var group = new GroupEntity();

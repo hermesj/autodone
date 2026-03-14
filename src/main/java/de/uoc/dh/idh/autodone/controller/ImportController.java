@@ -4,8 +4,12 @@ import static de.uoc.dh.idh.autodone.utils.ObjectUtils.FORCE;
 import static de.uoc.dh.idh.autodone.utils.ObjectUtils.mapFields;
 import static de.uoc.dh.idh.autodone.utils.WebUtils.href;
 
+import static de.uoc.dh.idh.autodone.entities.MediaEntity.LoadStatus.PENDING;
+
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import de.uoc.dh.idh.autodone.entities.GroupEntity;
 import de.uoc.dh.idh.autodone.services.GroupService;
 import de.uoc.dh.idh.autodone.services.ImportService;
+import de.uoc.dh.idh.autodone.services.MediaDownloadService;
 import de.uoc.dh.idh.autodone.services.StatusService;
 import jakarta.servlet.http.HttpSession;
 
@@ -36,6 +41,9 @@ public class ImportController {
 
 	@Autowired()
 	private ImportService importService;
+
+	@Autowired()
+	private MediaDownloadService mediaDownloadService;
 
 	@Autowired()
 	private StatusService statusService;
@@ -83,6 +91,26 @@ public class ImportController {
 			httpSession.removeAttribute("import");
 
 			var save = groupService.save(mapFields(form, group, FORCE));
+
+			// Collect media UUIDs with PENDING status and trigger async download
+			var pendingMedia = new ArrayList<UUID>();
+
+			if (save.status != null) {
+				for (var status : save.status) {
+					if (status.media != null) {
+						for (var media : status.media) {
+							if (media.loadStatus == PENDING) {
+								pendingMedia.add(media.uuid);
+							}
+						}
+					}
+				}
+			}
+
+			if (!pendingMedia.isEmpty()) {
+				mediaDownloadService.downloadAllPending(pendingMedia);
+			}
+
 			return "redirect:/group?uuid=" + save.uuid;
 		}
 	}
