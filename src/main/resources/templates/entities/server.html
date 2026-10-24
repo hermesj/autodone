@@ -12,6 +12,7 @@
       <script>document.getElementById('offset').value = -new Date().getTimezoneOffset();</script>
 
       <div th:if="${param.error}" class="alert alert-danger" style="max-width: 25rem;">Authorization failed!</div>
+      <div th:if="${param.invalid}" class="alert alert-danger" style="max-width: 25rem;">Invalid or unknown server!</div>
       <div th:if="${param.logout}" class="alert alert-primary" style="max-width: 25rem;">Logout successful!</div>
 
       <datalist id="servers">

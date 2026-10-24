@@ -2,6 +2,7 @@ package de.uoc.dh.idh.autodone.controller;
 
 import static de.uoc.dh.idh.autodone.utils.ObjectUtils.FORCE;
 import static de.uoc.dh.idh.autodone.utils.ObjectUtils.mapFields;
+import static de.uoc.dh.idh.autodone.utils.ObjectUtils.pick;
 import static de.uoc.dh.idh.autodone.utils.WebUtils.href;
 import static java.util.Map.of;
 
@@ -73,14 +74,15 @@ public class StatusController {
 	@PostMapping()
 	public String post(@RequestParam() Map<String, Object> form) {
 		var status = new StatusEntity();
+		var fields = pick(form, "date", "status");
 
 		if (form.containsKey("uuid")) {
 			status = statusService.getOne((String) form.get("uuid"));
 		} else {
-			form.put("group", groupService.getOne((String) form.get("group.uuid")));
+			fields.put("group", groupService.getOne((String) form.get("group.uuid")));
 		}
 
-		var save = statusService.save(mapFields(form, status, FORCE));
+		var save = statusService.save(mapFields(fields, status, FORCE));
 		return "redirect:/status?uuid=" + save.uuid;
 	}
 

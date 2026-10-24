@@ -9,6 +9,7 @@ import static java.util.UUID.fromString;
 import static org.springframework.beans.PropertyAccessorFactory.forBeanPropertyAccess;
 import static org.springframework.data.domain.PageRequest.of;
 import static org.springframework.data.domain.Sort.by;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 import java.util.Comparator;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.web.server.ResponseStatusException;
 
 public abstract class BaseService<T> {
 
@@ -43,7 +45,7 @@ public abstract class BaseService<T> {
 	}
 
 	public void delete(String uuid, OAuth2AuthenticationToken oauth) {
-		delete(fromString(uuid), oauth.getName(), oauth.getAuthorizedClientRegistrationId());
+		delete(parseUuid(uuid), oauth.getName(), oauth.getAuthorizedClientRegistrationId());
 	}
 
 	//
@@ -53,7 +55,23 @@ public abstract class BaseService<T> {
 	}
 
 	public T getOne(String uuid, OAuth2AuthenticationToken oauth) {
-		return getOne(fromString(uuid), oauth.getName(), oauth.getAuthorizedClientRegistrationId());
+		var one = getOne(parseUuid(uuid), oauth.getName(), oauth.getAuthorizedClientRegistrationId());
+
+		if (one == null) {
+			throw new ResponseStatusException(NOT_FOUND);
+		}
+
+		return one;
+	}
+
+	//
+
+	protected static UUID parseUuid(String uuid) {
+		try {
+			return fromString(uuid);
+		} catch (IllegalArgumentException | NullPointerException exception) {
+			throw new ResponseStatusException(NOT_FOUND);
+		}
 	}
 
 	//

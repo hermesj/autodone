@@ -121,6 +121,11 @@ public class WebUtils<T> {
 			return this;
 		}
 
+		public Request<T> header(String name, String value) {
+			head.set(name, value);
+			return this;
+		}
+
 		//
 
 		public T get(Href href) {

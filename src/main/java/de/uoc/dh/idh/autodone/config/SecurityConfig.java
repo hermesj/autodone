@@ -53,6 +53,11 @@ public class SecurityConfig {
 			authorizeHttpRequests.requestMatchers("/webjars/**").permitAll();
 			authorizeHttpRequests.requestMatchers(DEFAULT_LOGIN_PAGE_URL).permitAll();
 			paths.forEach((path) -> authorizeHttpRequests.requestMatchers(path).permitAll());
+
+			if (getEnvironment().matchesProfiles("test")) {
+				authorizeHttpRequests.requestMatchers("/h2-console/**").permitAll();
+			}
+
 			authorizeHttpRequests.anyRequest().authenticated();
 		});
 

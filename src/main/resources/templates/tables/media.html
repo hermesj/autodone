@@ -1,10 +1,46 @@
 <div class="row g-3">
   <div class="col-md-3" th:each="media : ${page}" th:object="${media}">
     <div class="card h-100">
-      <img th:alt="*{description}" th:src="@{*{url}}" class="card-img-top">
+
+      <!-- READY: show the actual image -->
+      <th:block th:if="*{loadStatus} == null or *{loadStatus.name()} == 'READY'">
+        <img th:alt="*{description}" th:src="@{*{url}}" class="card-img-top">
+      </th:block>
+
+      <!-- PENDING: waiting to start download -->
+      <th:block th:if="*{loadStatus} != null and *{loadStatus.name()} == 'PENDING'">
+        <div class="card-img-top d-flex align-items-center justify-content-center bg-light text-muted" style="min-height: 120px;">
+          <div class="text-center">
+            <i class="bi bi-clock fs-2"></i>
+            <div class="small mt-1">Waiting...</div>
+          </div>
+        </div>
+      </th:block>
+
+      <!-- LOADING: currently downloading -->
+      <th:block th:if="*{loadStatus} != null and *{loadStatus.name()} == 'LOADING'">
+        <div class="card-img-top d-flex align-items-center justify-content-center bg-light text-primary" style="min-height: 120px;">
+          <div class="text-center">
+            <div class="spinner-border spinner-border-sm" role="status"></div>
+            <div class="small mt-1">Loading...</div>
+          </div>
+        </div>
+      </th:block>
+
+      <!-- ERROR: download failed -->
+      <th:block th:if="*{loadStatus} != null and *{loadStatus.name()} == 'ERROR'">
+        <div class="card-img-top d-flex align-items-center justify-content-center bg-light text-danger" style="min-height: 120px;">
+          <div class="text-center">
+            <i class="bi bi-exclamation-triangle fs-2"></i>
+            <div class="small mt-1">Failed</div>
+          </div>
+        </div>
+      </th:block>
 
       <div class="card-body p-0">
         <p th:if="*{description}" th:text="*{description}" class="card-text p-3"></p>
+        <p th:if="*{sourceUrl} != null and (*{loadStatus} == null or *{loadStatus.name()} != 'READY')"
+           th:text="*{sourceUrl}" class="card-text p-3 text-truncate small text-muted"></p>
       </div>
 
       <div class="card-footer d-flex justify-content-end">

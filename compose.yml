@@ -1,7 +1,7 @@
 x-anchor:
   service: &service
     hostname: localhost
-    environment:
+    environment: &environment
 
       # AUTODONE
       SERVER_PORT: 4000
@@ -14,6 +14,10 @@ x-anchor:
 
       LOCAL_DOMAIN: ${HOSTNAME?External Hostname or IP Address}:3000
       MASTODON_WEB_DOMAIN: ${HOSTNAME?External Hostname or IP Address}:3000
+
+      # Bitnami defaults the streaming port to 4000, which autodone uses
+      MASTODON_STREAMING_PORT_NUMBER: 4001
+      MASTODON_STREAMING_API_BASE_URL: ws://${HOSTNAME?External Hostname or IP Address}:4001
 
       ALLOW_EMPTY_PASSWORD: true
       MASTODON_DATABASE_HOST: postgres
@@ -32,14 +36,31 @@ services:
   autodone:
     <<: *service
     command: mvn -f /src spring-boot:run
-    image: docker.io/library/maven:3-eclipse-temurin-17-alpine
+    image: docker.io/library/maven:3-eclipse-temurin-21-alpine
     ports: [4000:4000]
     volumes: [.:/src]
 
   mastodon:
     <<: *service
-    image: docker.io/bitnami/mastodon:4.2.9
+    image: docker.io/bitnamilegacy/mastodon:4.2.9
     ports: [3000:3000]
+    volumes: [mastodon:/bitnami/mastodon]
+
+  mastodon-sidekiq:
+    <<: *service
+    image: docker.io/bitnamilegacy/mastodon:4.2.9
+    environment:
+      <<: *environment
+      MASTODON_MODE: sidekiq
+    volumes: [mastodon:/bitnami/mastodon]
+
+  mastodon-streaming:
+    <<: *service
+    image: docker.io/bitnamilegacy/mastodon:4.2.9
+    environment:
+      <<: *environment
+      MASTODON_MODE: streaming
+    ports: [4001:4001]
 
   postgres:
     <<: *service
@@ -48,3 +69,6 @@ services:
   redis:
     <<: *service
     image: docker.io/library/redis:alpine
+
+volumes:
+  mastodon:

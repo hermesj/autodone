@@ -2,6 +2,7 @@ package de.uoc.dh.idh.autodone.controller;
 
 import static de.uoc.dh.idh.autodone.utils.ObjectUtils.FORCE;
 import static de.uoc.dh.idh.autodone.utils.ObjectUtils.mapFields;
+import static de.uoc.dh.idh.autodone.utils.ObjectUtils.pick;
 import static de.uoc.dh.idh.autodone.utils.WebUtils.href;
 import static java.time.Duration.between;
 import static java.util.Comparator.comparing;
@@ -20,6 +21,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import static de.uoc.dh.idh.autodone.entities.MediaEntity.LoadStatus.LOADING;
+import static de.uoc.dh.idh.autodone.entities.MediaEntity.LoadStatus.PENDING;
+
 import de.uoc.dh.idh.autodone.entities.GroupEntity;
 import de.uoc.dh.idh.autodone.entities.StatusEntity;
 import de.uoc.dh.idh.autodone.services.GroupService;
@@ -31,6 +35,9 @@ import jakarta.persistence.EntityManager;
 @Controller()
 @RequestMapping("/group")
 public class GroupController {
+
+	// fields of forms/group, everything else (token, status, ...) is set server-side
+	public static final String[] FIELDS = { "name", "visibility", "description", "enabled", "threaded" };
 
 	@Autowired()
 	private DateTimeUtils dateTimeUtils;
@@ -64,9 +71,15 @@ public class GroupController {
 			var status = mapFields(of("group", group), new StatusEntity());
 			var page = statusService.getPage(params.get("page"), params.get("sort"), group);
 
+			var mediaLoading = group.status != null && group.status.stream()
+					.filter(s -> s.media != null)
+					.flatMap(s -> s.media.stream())
+					.anyMatch(m -> m.loadStatus == PENDING || m.loadStatus == LOADING);
+
 			model.addAttribute("group", group);
 			model.addAttribute("status", status);
 			model.addAttribute("page", page);
+			model.addAttribute("mediaLoading", mediaLoading);
 			return "entity/group";
 		} else {
 			var group = new GroupEntity();
@@ -88,7 +101,7 @@ public class GroupController {
 			group = groupService.getOne(form.get("uuid"));
 		}
 
-		var save = groupService.save(mapFields(form, group, FORCE));
+		var save = groupService.save(mapFields(pick(form, FIELDS), group, FORCE));
 		return "redirect:/group?uuid=" + save.uuid;
 	}
 

@@ -2,10 +2,15 @@ package de.uoc.dh.idh.autodone.controller;
 
 import static de.uoc.dh.idh.autodone.utils.ObjectUtils.FORCE;
 import static de.uoc.dh.idh.autodone.utils.ObjectUtils.mapFields;
+import static de.uoc.dh.idh.autodone.utils.ObjectUtils.pick;
 import static de.uoc.dh.idh.autodone.utils.WebUtils.href;
 
+import static de.uoc.dh.idh.autodone.entities.MediaEntity.LoadStatus.PENDING;
+
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import de.uoc.dh.idh.autodone.entities.GroupEntity;
 import de.uoc.dh.idh.autodone.services.GroupService;
 import de.uoc.dh.idh.autodone.services.ImportService;
+import de.uoc.dh.idh.autodone.services.MediaDownloadService;
 import de.uoc.dh.idh.autodone.services.StatusService;
 import jakarta.servlet.http.HttpSession;
 
@@ -38,6 +44,9 @@ public class ImportController {
 	private ImportService importService;
 
 	@Autowired()
+	private MediaDownloadService mediaDownloadService;
+
+	@Autowired()
 	private StatusService statusService;
 
 	//
@@ -45,6 +54,11 @@ public class ImportController {
 	@GetMapping()
 	public String get(Model model, @RequestParam() Map<String, String> params) {
 		var group = (GroupEntity) httpSession.getAttribute("import");
+
+		if (group == null) {
+			return "redirect:/group";
+		}
+
 		var page = statusService.getPage(params.get("page"), params.get("sort"), group);
 		var alerts = new LinkedMultiValueMap<Integer, String>();
 		var errors = new LinkedMultiValueMap<Integer, String>();
@@ -82,7 +96,31 @@ public class ImportController {
 			var group = (GroupEntity) httpSession.getAttribute("import");
 			httpSession.removeAttribute("import");
 
-			var save = groupService.save(mapFields(form, group, FORCE));
+			if (group == null) {
+				return "redirect:/group";
+			}
+
+			var save = groupService.save(mapFields(pick(form, GroupController.FIELDS), group, FORCE));
+
+			// Collect media UUIDs with PENDING status and trigger async download
+			var pendingMedia = new ArrayList<UUID>();
+
+			if (save.status != null) {
+				for (var status : save.status) {
+					if (status.media != null) {
+						for (var media : status.media) {
+							if (media.loadStatus == PENDING) {
+								pendingMedia.add(media.uuid);
+							}
+						}
+					}
+				}
+			}
+
+			if (!pendingMedia.isEmpty()) {
+				mediaDownloadService.downloadAllPending(pendingMedia);
+			}
+
 			return "redirect:/group?uuid=" + save.uuid;
 		}
 	}

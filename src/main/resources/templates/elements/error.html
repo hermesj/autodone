@@ -11,7 +11,7 @@
       <img th:src="@{/images/mastodon-error.png}" alt="Error" class="card-img-top">
       <div class="card-body">
         <strong th:text="|${status}: ${error}|" class="card-title"></strong>
-        <p th:text="|${exception}: ${message}|" class="card-text"></p>
+        <p th:if="${exception != null}" th:text="|${exception}: ${message}|" class="card-text"></p>
       </div>
     </div>
   </main>
