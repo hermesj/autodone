@@ -2,6 +2,7 @@ package de.uoc.dh.idh.autodone.controller;
 
 import static de.uoc.dh.idh.autodone.utils.ObjectUtils.FORCE;
 import static de.uoc.dh.idh.autodone.utils.ObjectUtils.mapFields;
+import static de.uoc.dh.idh.autodone.utils.ObjectUtils.pick;
 import static de.uoc.dh.idh.autodone.utils.WebUtils.href;
 
 import java.util.Map;
@@ -65,16 +66,17 @@ public class MediaController {
 	@PostMapping()
 	public String post(@RequestBody() MultipartFile file, @RequestParam() Map<String, Object> form) throws Exception {
 		var media = new MediaEntity();
+		var fields = pick(form, "description");
 
 		if (form.containsKey("uuid")) {
 			media = mediaService.getOne((String) form.get("uuid"));
 		} else {
-			form.put("status", statusService.getOne((String) form.get("status.uuid")));
-			form.put("contentType", file.getContentType());
-			form.put("file", file.getBytes());
+			fields.put("status", statusService.getOne((String) form.get("status.uuid")));
+			fields.put("contentType", file.getContentType());
+			fields.put("file", file.getBytes());
 		}
 
-		var save = mediaService.save(mapFields(form, media, FORCE));
+		var save = mediaService.save(mapFields(fields, media, FORCE));
 		return "redirect:/media?uuid=" + save.uuid;
 	}
 

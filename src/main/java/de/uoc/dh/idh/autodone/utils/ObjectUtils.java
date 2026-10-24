@@ -1,8 +1,10 @@
 package de.uoc.dh.idh.autodone.utils;
 
+import static org.springframework.util.StringUtils.deleteAny;
+
+import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Component;
 
@@ -20,8 +22,6 @@ public class ObjectUtils {
 	//
 
 	private static ConversionService conversionService;
-
-	private static StringTrimmerEditor stringTrimmer;
 
 	//
 
@@ -43,8 +43,7 @@ public class ObjectUtils {
 							}
 
 							if (field.getType().equals(String.class) && (flags & TRIM_NULL) == TRIM_NULL) {
-								stringTrimmer.setAsText((String) sourceValue);
-								sourceValue = stringTrimmer.getValue();
+								sourceValue = trimToNull((String) sourceValue);
 							}
 
 							if (targetValue == null || (flags & OVERWRITE) == OVERWRITE) {
@@ -81,8 +80,7 @@ public class ObjectUtils {
 						}
 
 						if (field.getType().equals(String.class) && (flags & TRIM_NULL) == TRIM_NULL) {
-							stringTrimmer.setAsText((String) sourceValue);
-							sourceValue = stringTrimmer.getValue();
+							sourceValue = trimToNull((String) sourceValue);
 						}
 
 						if (targetValue == null || (flags & OVERWRITE) == OVERWRITE) {
@@ -100,9 +98,29 @@ public class ObjectUtils {
 
 	//
 
+	// keeps only the given keys, so request parameters cannot set other public fields
+	public static <V> Map<String, V> pick(Map<String, V> source, String... keys) {
+		var picked = new HashMap<String, V>();
+
+		for (var key : keys) {
+			if (source.containsKey(key)) {
+				picked.put(key, source.get(key));
+			}
+		}
+
+		return picked;
+	}
+
+	// same as StringTrimmerEditor("\r", true), which is stateful and must not be shared between threads
+	public static String trimToNull(String text) {
+		var trimmed = deleteAny(text.trim(), "\r");
+		return trimmed.isEmpty() ? null : trimmed;
+	}
+
+	//
+
 	private ObjectUtils(ConversionService conversionService) {
 		ObjectUtils.conversionService = conversionService;
-		ObjectUtils.stringTrimmer = new StringTrimmerEditor("\r", true);
 	}
 
 }

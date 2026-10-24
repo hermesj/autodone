@@ -2,6 +2,7 @@ package de.uoc.dh.idh.autodone.controller;
 
 import static de.uoc.dh.idh.autodone.utils.ObjectUtils.FORCE;
 import static de.uoc.dh.idh.autodone.utils.ObjectUtils.mapFields;
+import static de.uoc.dh.idh.autodone.utils.ObjectUtils.pick;
 import static de.uoc.dh.idh.autodone.utils.WebUtils.href;
 
 import static de.uoc.dh.idh.autodone.entities.MediaEntity.LoadStatus.PENDING;
@@ -53,6 +54,11 @@ public class ImportController {
 	@GetMapping()
 	public String get(Model model, @RequestParam() Map<String, String> params) {
 		var group = (GroupEntity) httpSession.getAttribute("import");
+
+		if (group == null) {
+			return "redirect:/group";
+		}
+
 		var page = statusService.getPage(params.get("page"), params.get("sort"), group);
 		var alerts = new LinkedMultiValueMap<Integer, String>();
 		var errors = new LinkedMultiValueMap<Integer, String>();
@@ -90,7 +96,11 @@ public class ImportController {
 			var group = (GroupEntity) httpSession.getAttribute("import");
 			httpSession.removeAttribute("import");
 
-			var save = groupService.save(mapFields(form, group, FORCE));
+			if (group == null) {
+				return "redirect:/group";
+			}
+
+			var save = groupService.save(mapFields(pick(form, GroupController.FIELDS), group, FORCE));
 
 			// Collect media UUIDs with PENDING status and trigger async download
 			var pendingMedia = new ArrayList<UUID>();

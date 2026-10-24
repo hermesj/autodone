@@ -8,6 +8,7 @@ import static org.springframework.boot.web.error.ErrorAttributeOptions.Include.S
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.error.ErrorAttributes;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,13 +22,17 @@ import jakarta.servlet.http.HttpServletResponse;
 public class ErrorController implements org.springframework.boot.webmvc.error.ErrorController {
 
 	@Autowired()
+	private Environment environment;
+
+	@Autowired()
 	private ErrorAttributes errorAttributes;
 
 	//
 
 	@RequestMapping()
 	public String http(Model model, HttpServletRequest servletRequest, HttpServletResponse response) {
-		var options = of(STATUS, ERROR, EXCEPTION, MESSAGE);
+		// exception details may contain SQL, internal host names or remote response bodies
+		var options = environment.matchesProfiles("test") ? of(STATUS, ERROR, EXCEPTION, MESSAGE) : of(STATUS, ERROR);
 		var request = new ServletWebRequest(servletRequest);
 
 		model.addAllAttributes(errorAttributes.getErrorAttributes(request, options));

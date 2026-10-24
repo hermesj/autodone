@@ -41,6 +41,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import de.uoc.dh.idh.autodone.entities.MediaEntity;
 import de.uoc.dh.idh.autodone.repositories.MediaRepository;
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 
 @Service()
@@ -101,6 +102,27 @@ public class MediaDownloadService {
 		}
 
 		log.info("Queued {} media downloads with {}s spacing, prioritized by status date", sorted.size(), DOWNLOAD_DELAY);
+	}
+
+	@PostConstruct()
+	private void postConstruct() {
+		// the download queue lives in memory, so re-queue what a restart interrupted
+		var pending = new TransactionTemplate(transactionManager).execute((ignored) -> {
+			var media = mediaRepository.findAllByLoadStatusInAndIdIsNullAndStatusIdIsNull(List.of(PENDING, LOADING));
+
+			for (var one : media) {
+				if (one.loadStatus == LOADING) {
+					one.loadStatus = PENDING;
+					mediaRepository.save(one);
+				}
+			}
+
+			return media.stream().map((one) -> one.uuid).toList();
+		});
+
+		if (!pending.isEmpty()) {
+			downloadAllPending(pending);
+		}
 	}
 
 	@PreDestroy()

@@ -2,6 +2,7 @@ package de.uoc.dh.idh.autodone.controller;
 
 import static de.uoc.dh.idh.autodone.utils.ObjectUtils.FORCE;
 import static de.uoc.dh.idh.autodone.utils.ObjectUtils.mapFields;
+import static de.uoc.dh.idh.autodone.utils.ObjectUtils.pick;
 import static de.uoc.dh.idh.autodone.utils.WebUtils.href;
 import static java.time.Duration.between;
 import static java.util.Comparator.comparing;
@@ -34,6 +35,9 @@ import jakarta.persistence.EntityManager;
 @Controller()
 @RequestMapping("/group")
 public class GroupController {
+
+	// fields of forms/group, everything else (token, status, ...) is set server-side
+	public static final String[] FIELDS = { "name", "visibility", "description", "enabled", "threaded" };
 
 	@Autowired()
 	private DateTimeUtils dateTimeUtils;
@@ -97,7 +101,7 @@ public class GroupController {
 			group = groupService.getOne(form.get("uuid"));
 		}
 
-		var save = groupService.save(mapFields(form, group, FORCE));
+		var save = groupService.save(mapFields(pick(form, FIELDS), group, FORCE));
 		return "redirect:/group?uuid=" + save.uuid;
 	}
 

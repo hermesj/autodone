@@ -55,6 +55,10 @@ public class StatusService extends BaseService<StatusEntity> {
 	}
 
 	public StatusEntity publish(StatusEntity status) {
+		if (status.id != null) {
+			return status;
+		}
+
 		var data = new HashMap<String, Object>();
 		data.put("status", status.status);
 		data.put("visibility", status.group.visibility.name().toLowerCase());
@@ -80,7 +84,9 @@ public class StatusService extends BaseService<StatusEntity> {
 		}
 
 		var href = remoteHref(status.group.token.server.domain, MASTODON_API_STATUS);
-		var post = request(StatusEntity.class).auth(status.group.token).post(href, data);
+		// Mastodon drops repeated posts with the same key, so retries cannot post twice
+		var post = request(StatusEntity.class).auth(status.group.token)
+				.header("Idempotency-Key", status.uuid.toString()).post(href, data);
 
 		return save(copyFields(post, status, FORCE));
 	}
