@@ -13,10 +13,12 @@ import static java.awt.Image.SCALE_FAST;
 import static java.time.Instant.now;
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static javax.imageio.ImageIO.read;
+import static javax.imageio.ImageIO.createImageInputStream;
+import static javax.imageio.ImageIO.getImageReaders;
 import static javax.imageio.ImageIO.write;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
@@ -57,6 +59,8 @@ public class MediaDownloadService {
 	private static final int MAX_RETRIES = 3;
 
 	private static final int MAX_DOWNLOAD_SIZE = 10 * 1024 * 1024; // 10 MB
+
+	static final long MAX_IMAGE_PIXELS = 40_000_000; // ~160 MB when decoded as ARGB
 
 	private static final int[] RETRY_DELAYS = { 10, 30, 90 };
 
@@ -264,11 +268,7 @@ public class MediaDownloadService {
 					result.file = inputStream.readAllBytes();
 				} else {
 					var buffer = new ByteArrayOutputStream();
-					var source = read(inputStream);
-
-					if (source == null) {
-						throw new IllegalArgumentException("Could not read image from URL");
-					}
+					var source = readImage(inputStream.readAllBytes());
 
 					var scaleX = source.getWidth();
 					var scaleY = source.getHeight();
@@ -304,6 +304,37 @@ public class MediaDownloadService {
 		}
 
 		return result;
+	}
+
+	/**
+	 * Decodes the first image, but checks its dimensions from the header first: a
+	 * few hundred KB of PNG can declare billions of pixels and exhaust the heap.
+	 */
+	static BufferedImage readImage(byte[] bytes) throws IOException {
+		try (var input = createImageInputStream(new ByteArrayInputStream(bytes))) {
+			var readers = input == null ? null : getImageReaders(input);
+
+			if (readers == null || !readers.hasNext()) {
+				throw new IllegalArgumentException("Could not read image from URL");
+			}
+
+			var reader = readers.next();
+
+			try {
+				reader.setInput(input, true, true);
+
+				var width = (long) reader.getWidth(0);
+				var height = (long) reader.getHeight(0);
+
+				if (width * height > MAX_IMAGE_PIXELS) {
+					throw new IllegalArgumentException("Image too large: " + width + "x" + height + " pixels");
+				}
+
+				return reader.read(0);
+			} finally {
+				reader.dispose();
+			}
+		}
 	}
 
 	private HttpURLConnection openConnection(String url) throws Exception {
