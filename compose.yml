@@ -32,7 +32,7 @@ services:
   autodone:
     <<: *service
     command: mvn -f /src spring-boot:run
-    image: docker.io/library/maven:3-eclipse-temurin-17-alpine
+    image: docker.io/library/maven:3-eclipse-temurin-21-alpine
     ports: [4000:4000]
     volumes: [.:/src]
 
