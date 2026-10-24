@@ -1,14 +1,19 @@
 package de.uoc.dh.idh.autodone.services;
 
+import static de.uoc.dh.idh.autodone.AutodoneApplication.getEnvironment;
 import static de.uoc.dh.idh.autodone.config.MastodonConfig.MASTODON_API_APPS;
 import static de.uoc.dh.idh.autodone.config.MastodonConfig.MASTODON_API_INSTANCE;
 import static de.uoc.dh.idh.autodone.config.MastodonConfig.MASTODON_OAUTH_SCOPES;
 import static de.uoc.dh.idh.autodone.config.SecurityConfig.OAUTH_REDIRECT;
+import static de.uoc.dh.idh.autodone.utils.NetUtils.hostOf;
+import static de.uoc.dh.idh.autodone.utils.NetUtils.requireDomain;
+import static de.uoc.dh.idh.autodone.utils.NetUtils.requirePublicHost;
 import static de.uoc.dh.idh.autodone.utils.ObjectUtils.copyFields;
 import static de.uoc.dh.idh.autodone.utils.WebUtils.localHref;
 import static de.uoc.dh.idh.autodone.utils.WebUtils.remoteHref;
 import static de.uoc.dh.idh.autodone.utils.WebUtils.request;
 
+import java.net.UnknownHostException;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,10 +41,19 @@ public class ServerService {
 	}
 
 	public ServerEntity getOne(String domain) {
-		return getOne(domain, false);
+		return serverRepository.findOneByDomain(domain);
 	}
 
-	public ServerEntity getOne(String domain, boolean metadata) {
+	public ServerEntity getOne(String domain, boolean metadata) throws UnknownHostException {
+		if (metadata) {
+			// the domain comes from the anonymous login form and is requested server-side
+			domain = requireDomain(domain);
+
+			if (!getEnvironment().matchesProfiles("test")) {
+				requirePublicHost(hostOf(domain));
+			}
+		}
+
 		var server = serverRepository.findOneByDomain(domain);
 
 		if (metadata) {

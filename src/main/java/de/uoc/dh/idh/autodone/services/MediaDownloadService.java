@@ -8,6 +8,7 @@ import static de.uoc.dh.idh.autodone.entities.MediaEntity.LoadStatus.ERROR;
 import static de.uoc.dh.idh.autodone.entities.MediaEntity.LoadStatus.LOADING;
 import static de.uoc.dh.idh.autodone.entities.MediaEntity.LoadStatus.PENDING;
 import static de.uoc.dh.idh.autodone.entities.MediaEntity.LoadStatus.READY;
+import static de.uoc.dh.idh.autodone.utils.NetUtils.requirePublicHost;
 import static java.awt.Image.SCALE_FAST;
 import static java.time.Instant.now;
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
@@ -21,7 +22,6 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.InetAddress;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
@@ -348,14 +348,7 @@ public class MediaDownloadService {
 			throw new SecurityException("Missing host in URL: " + url);
 		}
 
-		var address = InetAddress.getByName(host);
-
-		if (address.isLoopbackAddress()
-				|| address.isLinkLocalAddress()
-				|| address.isSiteLocalAddress()
-				|| address.isAnyLocalAddress()) {
-			throw new SecurityException("Private/internal host not allowed: " + host);
-		}
+		requirePublicHost(host);
 	}
 
 	//
