@@ -5,7 +5,7 @@ import static org.springframework.boot.web.error.ErrorAttributeOptions.Include.E
 import static org.springframework.boot.web.error.ErrorAttributeOptions.Include.MESSAGE;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.error.ErrorAttributes;
+import org.springframework.boot.webmvc.error.ErrorAttributes;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Controller()
 @RequestMapping("${server.error.path:${error.path:/error}}")
-public class ErrorController implements org.springframework.boot.web.servlet.error.ErrorController {
+public class ErrorController implements org.springframework.boot.webmvc.error.ErrorController {
 
 	@Autowired()
 	private ErrorAttributes errorAttributes;
